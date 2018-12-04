@@ -1,6 +1,6 @@
-package com.closeratio.aoc2018.day2
+package com.closeratio.aoc2018.day3
 
-import com.closeratio.aoc2018.common.ResourceLoader
+import com.closeratio.aoc2018.common.resource.ResourceLoader
 
 object AocRunner {
 

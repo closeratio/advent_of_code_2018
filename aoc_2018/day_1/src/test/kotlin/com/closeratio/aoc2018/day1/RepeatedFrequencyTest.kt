@@ -1,6 +1,6 @@
 package com.closeratio.aoc2018.day1
 
-import com.closeratio.aoc2018.common.ResourceLoader
+import com.closeratio.aoc2018.common.resource.ResourceLoader
 import com.closeratio.aoc2018.day1.FrequencyParser.computeRepeatedFrequency
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`

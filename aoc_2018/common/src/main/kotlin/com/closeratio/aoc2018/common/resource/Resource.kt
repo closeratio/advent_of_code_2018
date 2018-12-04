@@ -1,4 +1,4 @@
-package com.closeratio.aoc2018.common
+package com.closeratio.aoc2018.common.resource
 
 class Resource(
 		val data: String

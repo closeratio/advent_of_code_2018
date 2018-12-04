@@ -1,4 +1,4 @@
-package com.closeratio.aoc2018.day2
+package com.closeratio.aoc2018.day3
 
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`

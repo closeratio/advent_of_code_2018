@@ -1,7 +1,7 @@
-package com.closeratio.aoc2018.day2
+package com.closeratio.aoc2018.day3
 
-import com.closeratio.aoc2018.common.ResourceLoader.loadResource
-import com.closeratio.aoc2018.day2.InventoryManager.calculateChecksum
+import com.closeratio.aoc2018.common.resource.ResourceLoader.loadResource
+import com.closeratio.aoc2018.day3.InventoryManager.calculateChecksum
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers
 import org.junit.jupiter.api.Test

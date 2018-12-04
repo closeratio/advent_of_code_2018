@@ -1,4 +1,4 @@
-package com.closeratio.aoc2018.day2
+package com.closeratio.aoc2018.day3
 
 data class InventoryLine(
 		val pairTotal: Int,
