@@ -16,4 +16,9 @@ class SquareID(val id: Int) {
 	override fun hashCode(): Int {
 		return id
 	}
+
+	override fun toString(): String {
+		return "SquareID(id=$id)"
+	}
+
 }
