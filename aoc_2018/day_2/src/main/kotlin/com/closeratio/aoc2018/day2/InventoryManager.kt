@@ -1,9 +1,9 @@
-package com.closeratio.aoc2018.day3
+package com.closeratio.aoc2018.day2
 
 object InventoryManager {
 
 	fun calculateChecksum(ids: List<String>): Int {
-		return ids.map(::calculateInventoryLine)
+		return ids.map(InventoryManager::calculateInventoryLine)
 				.reduce { a, b -> a + b }
 				.let { it.pairTotal * it.tripleTotal }
 	}

@@ -1,6 +1,6 @@
-package com.closeratio.aoc2018.day3
+package com.closeratio.aoc2018.day2
 
-import com.closeratio.aoc2018.day3.InventoryManager.findTargetBoxesSameChars
+import com.closeratio.aoc2018.day2.InventoryManager.findTargetBoxesSameChars
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
 import org.junit.jupiter.api.Test

@@ -1,4 +1,4 @@
-package com.closeratio.aoc2018.day3
+package com.closeratio.aoc2018.day2
 
 import com.closeratio.aoc2018.common.resource.ResourceLoader
 
