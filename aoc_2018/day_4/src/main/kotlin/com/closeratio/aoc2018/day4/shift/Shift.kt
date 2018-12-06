@@ -1,5 +1,6 @@
-package com.closeratio.aoc2018.day4
+package com.closeratio.aoc2018.day4.shift
 
+import com.closeratio.aoc2018.day4.guard.GuardId
 import java.time.LocalDateTime
 
 class Shift(

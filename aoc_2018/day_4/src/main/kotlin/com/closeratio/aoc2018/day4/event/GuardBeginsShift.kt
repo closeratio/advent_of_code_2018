@@ -1,6 +1,6 @@
 package com.closeratio.aoc2018.day4.event
 
-import com.closeratio.aoc2018.day4.GuardId
+import com.closeratio.aoc2018.day4.guard.GuardId
 import java.time.LocalDateTime
 
 class GuardBeginsShift(

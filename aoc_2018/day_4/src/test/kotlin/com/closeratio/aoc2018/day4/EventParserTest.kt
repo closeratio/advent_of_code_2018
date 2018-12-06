@@ -1,7 +1,7 @@
 package com.closeratio.aoc2018.day4
 
 import com.closeratio.aoc2018.common.resource.ResourceLoader.loadResource
-import com.closeratio.aoc2018.day4.event.EventParser.parseEvent
+import com.closeratio.aoc2018.day4.event.EventFactory.buildEvent
 import com.closeratio.aoc2018.day4.event.GuardBeginsShift
 import com.closeratio.aoc2018.day4.event.GuardWakesUp
 import org.hamcrest.MatcherAssert.assertThat
@@ -18,7 +18,7 @@ class EventParserTest {
 				.data
 				.trim()
 				.split("\n")
-				.map { parseEvent(it) }
+				.map { buildEvent(it) }
 				.sortedBy { it.dateTime }
 
 		assertThat(events.size, `is`(17))
