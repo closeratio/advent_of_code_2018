@@ -7,23 +7,22 @@ import com.closeratio.aoc2018.day4.shift.ShiftFactory.buildShifts
 
 object OptimalGuardCalculator {
 
-	fun computeOptimalGuardStrategy(lines: List<String>): Pair<GuardId, Int> {
-		val events = lines.map { buildEvent(it) }
-		val shifts = buildShifts(events)
-		val guards = buildGuards(shifts)
+	fun computeOptimalGuardStrategyBasic(lines: List<String>): Pair<GuardId, Int> {
+		val guards = buildGuards(buildShifts(lines.map { buildEvent(it) }))
 
-		val targetGuard = guards.sortedBy { it.shifts.flatMap { it.sleepTimes }.size }.last()
+		val targetGuard = guards.sortedBy { it.totalSleepTime() }.last()
 
-		val sleepMap = hashMapOf<Int, Int>()
+		return Pair(targetGuard.id, targetGuard.mostCommonSleepTime().minute)
+	}
 
-		targetGuard.shifts
-				.flatMap { shift -> shift.sleepTimes.map { it.minute } }
-				.forEach {
-					sleepMap.getOrPut(it) { 0 }
-					sleepMap[it] = sleepMap[it]!! + 1
-				}
+	fun computeOptimalGuardStrategyAdvanced(lines: List<String>): Pair<GuardId, Int> {
+		val guards = buildGuards(buildShifts(lines.map { buildEvent(it) }))
 
-		return Pair(targetGuard.id, sleepMap.entries.sortedBy { it.value }.last().key)
+		val targetGuard = guards.map { Pair(it.id, it.mostCommonSleepTime()) }
+				.sortedBy { it.second.count }
+				.last()
+
+		return Pair(targetGuard.first, targetGuard.second.minute)
 	}
 
 }
