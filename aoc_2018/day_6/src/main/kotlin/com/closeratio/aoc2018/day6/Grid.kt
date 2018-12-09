@@ -2,6 +2,7 @@ package com.closeratio.aoc2018.day6
 
 import com.closeratio.aoc2018.common.math.Vec2i
 import java.util.*
+import kotlin.collections.ArrayList
 
 class Grid(
 		val topLeftCorner: Vec2i,
@@ -36,9 +37,49 @@ class Grid(
 	}
 
 	fun largestFiniteArea(): Int {
-		val candidateCoords = filterCandidateCoords()
+		val coordCount = HashMap(coords.associate { Pair(it, 0) })
+		val distanceMap = computeDistanceMap()
 
-		return 0
+
+		distanceMap.values.forEach { coordDistanceSet ->
+			val coordDistanceMap = hashMapOf<Int, ArrayList<Coordinate>>()
+
+			coordDistanceSet.forEach {
+				coordDistanceMap
+						.getOrPut(it.distance) { ArrayList() }
+						.add(it.coordinate)
+			}
+
+			val lowestDistanceCoords = coordDistanceMap.entries
+					.sortedBy { it.key }
+					.first()
+					.value
+
+			if (lowestDistanceCoords.size == 1) {
+				val coord = lowestDistanceCoords[0]
+				coordCount[coord] = coordCount[coord]!! + 1
+			}
+		}
+
+		val applicableCoords = filterCandidateCoords().toSet()
+
+		return coordCount.entries
+				.filter { it.key in applicableCoords }
+				.sortedBy { it.value }
+				.last()
+				.value
+	}
+
+	fun safeRegionCount(distanceLimit: Int): Int {
+
+		return getPoints().mapNotNull { point ->
+			if (coords.map { it.pos.manhattan(point) }.sum() < distanceLimit) {
+				1
+			} else {
+				null
+			}
+		}.sum()
+
 	}
 
 	companion object {

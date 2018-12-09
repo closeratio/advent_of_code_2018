@@ -46,4 +46,11 @@ class GridTest {
 		assertThat(grid.largestFiniteArea(), `is`(17))
 	}
 
+	@Test
+	fun safeRegionCount() {
+		val grid = Grid.from(loadResource("/test_input_1.txt").data)
+
+		assertThat(grid.safeRegionCount(32), `is`(16))
+	}
+
 }
