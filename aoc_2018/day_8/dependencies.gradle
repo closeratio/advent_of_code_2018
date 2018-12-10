@@ -1,0 +1,5 @@
+project(':aoc_2018:day_8') {
+	dependencies {
+
+	}
+}
