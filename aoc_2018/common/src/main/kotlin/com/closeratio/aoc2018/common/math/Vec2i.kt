@@ -15,4 +15,8 @@ class Vec2i(x: Int, y: Int): Vec2<Int>(x, y) {
 		val ZERO = Vec2i(0, 0)
 	}
 
+	operator fun plus(v: Vec2i): Vec2i {
+		return Vec2i(x + v.x, y + v.y)
+	}
+
 }

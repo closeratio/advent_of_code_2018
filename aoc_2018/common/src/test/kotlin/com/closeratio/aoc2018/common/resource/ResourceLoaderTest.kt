@@ -1,4 +1,4 @@
-package com.closeratio.aoc2018.common
+package com.closeratio.aoc2018.common.resource
 
 import com.closeratio.aoc2018.common.resource.ResourceLoader.loadResource
 import org.hamcrest.MatcherAssert.assertThat

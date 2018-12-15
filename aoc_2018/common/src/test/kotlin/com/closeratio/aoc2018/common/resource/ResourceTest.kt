@@ -1,6 +1,5 @@
-package com.closeratio.aoc2018.common
+package com.closeratio.aoc2018.common.resource
 
-import com.closeratio.aoc2018.common.resource.Resource
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
 import org.junit.jupiter.api.Test
