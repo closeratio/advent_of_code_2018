@@ -6,8 +6,11 @@ object AocRunner {
 
 	@JvmStatic
 	fun main(args: Array<String>) {
-		val result = Game.from(ResourceLoader.loadResource("/input.txt").data).getHighestScore()
-		println(result)
+		val result1 = Game.from(ResourceLoader.loadResource("/input_1.txt").data).getHighestScore()
+		println(result1)
+
+		val result2 = Game.from(ResourceLoader.loadResource("/input_2.txt").data).getHighestScore()
+		println(result2)
 	}
 
 }

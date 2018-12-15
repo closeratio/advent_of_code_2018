@@ -24,7 +24,7 @@ class GameTest {
 		val game = from(ResourceLoader.loadResource("/test_input_1.txt").data)
 		val result = game.getHighestScore()
 
-		assertThat(result, `is`(8317))
+		assertThat(result, `is`(8317L))
 	}
 
 	@Test
@@ -32,7 +32,7 @@ class GameTest {
 		val game = from(ResourceLoader.loadResource("/test_input_2.txt").data)
 		val result = game.getHighestScore()
 
-		assertThat(result, `is`(146373))
+		assertThat(result, `is`(146373L))
 	}
 
 	@Test
@@ -40,7 +40,7 @@ class GameTest {
 		val game = from(ResourceLoader.loadResource("/test_input_6.txt").data)
 		val result = game.getHighestScore()
 
-		assertThat(result, `is`(32))
+		assertThat(result, `is`(32L))
 	}
 
 }

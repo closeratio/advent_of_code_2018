@@ -8,36 +8,62 @@ class Game(
 	fun simulate(): List<Player> {
 		val players = IntRange(1, playerCount).map { Player(it) }
 
-		var marbleValue = 1
+		var marbleValue = 1L
 		var playerIndex = 0
 
-		val marbleCircle = arrayListOf(Marble(0))
-		var currentMarbleIndex = 0
+		var currentMarble = Marble(0)
+		currentMarble.next = currentMarble
+		currentMarble.previous = currentMarble
 
 		while (marbleValue <= lastMarbleValue) {
 			val player = players[playerIndex]
 			val marbleToInsert = Marble(marbleValue)
 
-			if (marbleValue % 23 == 0) {
+			if (marbleValue % 23 == 0L) {
 				player.marbles.add(marbleToInsert)
 
-				val removalIndex = Math.abs((currentMarbleIndex - 7) % marbleCircle.size)
-				player.marbles.add(marbleCircle.removeAt(removalIndex))
+				val marbleToRemove = currentMarble
+						.previous
+						.previous
+						.previous
+						.previous
+						.previous
+						.previous
+						.previous
 
-				currentMarbleIndex = removalIndex
+				val leftMarble = marbleToRemove.previous
+				val rightMarble = marbleToRemove.next
+
+				player.marbles.add(marbleToRemove)
+
+				leftMarble.next = rightMarble
+				rightMarble.previous = leftMarble
+				currentMarble = rightMarble
 			} else {
-				val insertionIndex = (currentMarbleIndex + 2) % marbleCircle.size
-				marbleCircle.add(insertionIndex, marbleToInsert)
-				currentMarbleIndex = insertionIndex
+				val leftMarble = currentMarble.next
+				val rightMarble = leftMarble.next
+
+				leftMarble.next = marbleToInsert
+				marbleToInsert.previous = leftMarble
+
+				rightMarble.previous = marbleToInsert
+				marbleToInsert.next = rightMarble
+
+				currentMarble = marbleToInsert
 			}
 
 //			val sb = StringBuilder("[${player.id}] ")
-//			marbleCircle.forEachIndexed { index, marble ->
-//				if (index == currentMarbleIndex) {
-//					sb.append("(${marble.value})")
+//			sb.append(" 0 ")
+//
+//			var currMarble = zeroMarble.next
+//			while (currMarble != zeroMarble) {
+//
+//				if (currMarble == currentMarble) {
+//					sb.append("(${currMarble.value})")
 //				} else {
-//					sb.append(" ${marble.value} ")
+//					sb.append(" ${currMarble.value} ")
 //				}
+//				currMarble = currMarble.next
 //			}
 //			println(sb)
 
@@ -48,7 +74,7 @@ class Game(
 		return players
 	}
 
-	fun getHighestScore(): Int {
+	fun getHighestScore(): Long {
 		return simulate()
 				.map { it.marbles.map { it.value }.sum() }
 				.max()!!

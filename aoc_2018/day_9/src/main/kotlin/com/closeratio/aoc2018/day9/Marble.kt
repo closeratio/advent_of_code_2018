@@ -1,6 +1,10 @@
 package com.closeratio.aoc2018.day9
 
-class Marble(val value: Int) {
+class Marble(
+		val value: Long) {
+
+	lateinit var next: Marble
+	lateinit var previous: Marble
 
 	override fun equals(other: Any?): Boolean {
 		if (this === other) return true
@@ -14,7 +18,7 @@ class Marble(val value: Int) {
 	}
 
 	override fun hashCode(): Int {
-		return value
+		return value.hashCode()
 	}
 
 	override fun toString(): String {
