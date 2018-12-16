@@ -1,13 +1,7 @@
 rootProject.name = 'advent_of_code_2018'
 
 include ':aoc_2018:common'
-include ':aoc_2018:day_1'
-include ':aoc_2018:day_2'
-include ':aoc_2018:day_3'
-include ':aoc_2018:day_4'
-include ':aoc_2018:day_5'
-include ':aoc_2018:day_6'
-include ':aoc_2018:day_7'
-include ':aoc_2018:day_8'
-include ':aoc_2018:day_9'
-include ':aoc_2018:day_10'
+
+(1..11).each {
+	include ":aoc_2018:day_$it"
+}
