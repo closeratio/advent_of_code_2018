@@ -12,7 +12,7 @@ class Square(
 	fun points(): Set<Vec2i> {
 		return IntRange(topLeftCorner.x, topLeftCorner.x + width - 1).flatMap { x ->
 			IntRange(topLeftCorner.y, topLeftCorner.y + height - 1).map { y ->
-				Vec2i(x, y)
+				Vec2i.from(x, y)
 			}
 		}.toSet()
 	}

@@ -18,8 +18,8 @@ class GridParserTest {
 
 		val square = squares[0]
 		assertThat(square.id, `is`(SquareID(1)))
-		assertThat(square.topLeftCorner, `is`(Vec2i(1, 3)))
-		assertThat(square.bottomRightCorner, `is`(Vec2i(5, 7)))
+		assertThat(square.topLeftCorner, `is`(Vec2i.from(1, 3)))
+		assertThat(square.bottomRightCorner, `is`(Vec2i.from(5, 7)))
 		assertThat(square.height, `is`(4))
 		assertThat(square.width, `is`(4))
 	}

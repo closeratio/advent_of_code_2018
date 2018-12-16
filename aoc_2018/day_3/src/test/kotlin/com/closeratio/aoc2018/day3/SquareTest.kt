@@ -9,7 +9,7 @@ class SquareTest {
 
 	@Test
 	fun testPoints() {
-		val points = Square(SquareID(0), Vec2i(1, 3), Vec2i(5, 7), 4, 4).points()
+		val points = Square(SquareID(0), Vec2i.from(1, 3), Vec2i.from(5, 7), 4, 4).points()
 
 		assertThat(points.size, `is`(16))
 	}

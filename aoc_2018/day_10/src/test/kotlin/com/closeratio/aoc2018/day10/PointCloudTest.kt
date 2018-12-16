@@ -14,11 +14,11 @@ class PointCloudTest {
 		val result = PointCloud.from(ResourceLoader.loadResource("/test_input_1.txt").data.split("\n"))
 
 		assertThat(result.points.size, `is`(31))
-		assertThat(result.points.first().position, `is`(Vec2i(9, 1)))
-		assertThat(result.points.first().velocity, `is`(Vec2i(0, 2)))
+		assertThat(result.points.first().position, `is`(Vec2i.from(9, 1)))
+		assertThat(result.points.first().velocity, `is`(Vec2i.from(0, 2)))
 
-		assertThat(result.points.last().position, `is`(Vec2i(-3, 6)))
-		assertThat(result.points.last().velocity, `is`(Vec2i(2, -1)))
+		assertThat(result.points.last().position, `is`(Vec2i.from(-3, 6)))
+		assertThat(result.points.last().velocity, `is`(Vec2i.from(2, -1)))
 
 	}
 
@@ -27,7 +27,7 @@ class PointCloudTest {
 		val result = PointCloud.from(ResourceLoader.loadResource("/test_input_1.txt").data.split("\n"))
 
 		result.iterate()
-		assertThat(result.points.first().position, `is`(Vec2i(9, 3)))
+		assertThat(result.points.first().position, `is`(Vec2i.from(9, 3)))
 	}
 
 	@Test
@@ -39,8 +39,8 @@ class PointCloudTest {
 		val bounds = BoundingBox.from(result.second)
 
 		assertThat(iterCount, `is`(3))
-		assertThat(bounds.width, `is`(9))
-		assertThat(bounds.height, `is`(7))
+		assertThat(bounds.width, `is`(10))
+		assertThat(bounds.height, `is`(8))
 	}
 
 }

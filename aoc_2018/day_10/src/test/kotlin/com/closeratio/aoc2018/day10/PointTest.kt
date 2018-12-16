@@ -10,8 +10,8 @@ class PointTest {
 	@Test
 	fun move() {
 		val point = Point(
-				Vec2i(0, 0),
-				Vec2i(2, -4))
+				Vec2i.from(0, 0),
+				Vec2i.from(2, -4))
 
 		val moved1 = point.move()
 		assertThat(moved1.position.x, `is`(2))

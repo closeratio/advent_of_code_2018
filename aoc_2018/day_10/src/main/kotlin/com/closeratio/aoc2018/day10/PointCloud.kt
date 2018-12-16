@@ -43,7 +43,7 @@ class PointCloud(
 		val sb = StringBuilder()
 		IntRange(lowestBounds.topLeft.y, lowestBounds.bottomRight.y).map { y ->
 			IntRange(lowestBounds.topLeft.x, lowestBounds.bottomRight.x).map { x ->
-				sb.append(if (Vec2i(x, y) in positionSet) "#" else " ")
+				sb.append(if (Vec2i.from(x, y) in positionSet) "#" else " ")
 			}
 			sb.appendln()
 		}
@@ -62,8 +62,8 @@ class PointCloud(
 					LinkedHashSet(lines.map {
 						val matches = LINE_REGEX.find(it)!!.groupValues
 						Point(
-								Vec2i(matches[1].toInt(), matches[2].toInt()),
-								Vec2i(matches[3].toInt(), matches[4].toInt()))
+								Vec2i.from(matches[1].toInt(), matches[2].toInt()),
+								Vec2i.from(matches[3].toInt(), matches[4].toInt()))
 					})
 			)
 		}

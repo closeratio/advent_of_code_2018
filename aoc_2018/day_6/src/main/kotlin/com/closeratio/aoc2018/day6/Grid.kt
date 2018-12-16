@@ -21,7 +21,7 @@ class Grid(
 	fun getPoints(): Set<Vec2i> {
 		return IntRange(topLeftCorner.x, bottomRightCorner.x).flatMap { x ->
 			IntRange(topLeftCorner.y, bottomRightCorner.y).map { y ->
-				Vec2i(x, y)
+				Vec2i.from(x, y)
 			}
 		}.toSet()
 	}
@@ -88,7 +88,7 @@ class Grid(
 					.map { it.trim() }
 					.map {
 						val coords = it.split(",")
-						Vec2i(coords[0].trim().toInt(), coords[1].trim().toInt())
+						Vec2i.from(coords[0].trim().toInt(), coords[1].trim().toInt())
 					}
 					.map { Coordinate(UUID.randomUUID(), it) }
 
@@ -98,8 +98,8 @@ class Grid(
 			val maxY = points.map { it.pos.y }.max()!!
 
 			return Grid(
-					Vec2i(minX, minY),
-					Vec2i(maxX, maxY),
+					Vec2i.from(minX, minY),
+					Vec2i.from(maxX, maxY),
 					points)
 		}
 	}

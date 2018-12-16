@@ -9,7 +9,7 @@ class FuelCellTest {
 
 	@Test
 	fun from() {
-		val result = FuelCell.from(Vec2i(3, 5), 8)
+		val result = FuelCell.from(Vec2i.from(3, 5), 8)
 
 		assertThat(result.powerLevel, `is`(4))
 	}

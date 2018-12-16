@@ -14,8 +14,8 @@ class GridTest {
 		val grid = Grid.from(loadResource("/test_input_1.txt").data)
 
 		assertThat(grid.filterCandidateCoords().map { it.pos }, containsInAnyOrder(
-				Vec2i(3, 4),
-				Vec2i(5, 5)))
+				Vec2i.from(3, 4),
+				Vec2i.from(5, 5)))
 	}
 
 	@Test
@@ -31,11 +31,11 @@ class GridTest {
 		val distMap = grid.computeDistanceMap()
 
 		assertThat(
-				distMap[Vec2i(3, 1)]!!.map { it.distance }.min(),
+				distMap[Vec2i.from(3, 1)]!!.map { it.distance }.min(),
 				`is`(2))
 
 		assertThat(
-				distMap[Vec2i(2, 9)]!!.map { it.distance }.min(),
+				distMap[Vec2i.from(2, 9)]!!.map { it.distance }.min(),
 				`is`(4))
 	}
 

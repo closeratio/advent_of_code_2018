@@ -16,15 +16,15 @@ class ParseGridTest {
 
 		assertThat(grid.coords.size, `is`(6))
 		assertThat(grid.coords.map { it.pos }, contains(
-				Vec2i(1, 1),
-				Vec2i(1, 6),
-				Vec2i(8, 3),
-				Vec2i(3, 4),
-				Vec2i(5, 5),
-				Vec2i(8, 9)))
+				Vec2i.from(1, 1),
+				Vec2i.from(1, 6),
+				Vec2i.from(8, 3),
+				Vec2i.from(3, 4),
+				Vec2i.from(5, 5),
+				Vec2i.from(8, 9)))
 
-		assertThat(grid.topLeftCorner, `is`(Vec2i(1, 1)))
-		assertThat(grid.bottomRightCorner, `is`(Vec2i(8, 9)))
+		assertThat(grid.topLeftCorner, `is`(Vec2i.from(1, 1)))
+		assertThat(grid.bottomRightCorner, `is`(Vec2i.from(8, 9)))
 	}
 
 }
