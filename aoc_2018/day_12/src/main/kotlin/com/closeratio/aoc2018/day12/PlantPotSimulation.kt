@@ -6,16 +6,45 @@ class PlantPotSimulation private constructor(
 ) {
 
 	var state = initialState
+	private val transitionCache = TransitionCache()
 
-	fun iterate(iterCount: Long) {
-		LongRange(1, iterCount).forEach {
-			state = state.produceNewState(ruleset)
+	fun iterate(iterCount: Long, useLoopDetection: Boolean = true) {
+
+		LongRange(1, iterCount).forEach { currIter ->
+			val cache = transitionCache.cache
+
+			val cachePreSize = cache.size
+			state = state.produceNewState(ruleset, transitionCache)
+			val cachePostSize = cache.size
+
+			// Detect loop
+			if (useLoopDetection && cachePreSize == cachePostSize) {
+
+				val loopStartIndex = cache.keys.indexOf(state.states)
+				val singleLoopSize = cache.size - loopStartIndex
+
+				val singleLoopOffset = cache.values
+						.toList()
+						.subList(loopStartIndex, cache.size)
+						.map { it.indexOffset }
+						.sum()
+
+				val loopsRequired = (iterCount - currIter) / singleLoopSize
+				val loopOffset = loopsRequired * singleLoopOffset + state.baseIndex
+				state = PlantPotState.from(loopOffset, state.states)
+
+				return
+			}
 		}
 	}
 
-	fun sumOfPlantIndices(): Int {
-		return state.plantPots
-				.map { if (it.value) it.key else 0 }
+	fun sumOfPlantIndices(): Long {
+		val base = state.baseIndex
+
+		return state.states
+				.mapIndexed { index, state ->
+					if (state) index + base else 0
+				}
 				.sum()
 	}
 

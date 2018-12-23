@@ -13,6 +13,20 @@ class PlantPotSimulationTest {
 	fun sumOfPlantIndicies() {
 		sim.iterate(20)
 
-		assertThat(sim.sumOfPlantIndices(), `is`(325))
+		assertThat(sim.sumOfPlantIndices(), `is`(325L))
+	}
+
+	@Test
+	fun sumOfPlantIndicesLarge() {
+		sim.iterate(1000000)
+
+		assertThat(sim.sumOfPlantIndices(), `is`(19999374L))
+	}
+
+	@Test
+	fun sumOfPlantIndicesVeryLarge() {
+		sim.iterate(1230007)
+
+		assertThat(sim.sumOfPlantIndices(), `is`(24599514L))
 	}
 }
