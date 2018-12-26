@@ -9,6 +9,48 @@ class Simulation(
 ) {
 
 	val trackMap = tracks.associateBy { it.position }
+	val gridWidth = trackMap.keys
+			.map { it.x }
+			.max()!! + 1
+
+	fun iterate(iterationCount: Int?): Vec2i? {
+		(1..(iterationCount ?: Int.MAX_VALUE)).forEach {
+			val crashLocation = moveCarts()
+
+			if (crashLocation != null) {
+				return crashLocation
+			}
+		}
+
+		return null
+	}
+
+	private fun moveCarts(): Vec2i? {
+		// Get cart order
+		val orderedCarts = carts.sortedBy { it.position.y * gridWidth + it.position.x }
+
+		orderedCarts.forEach {
+			it.move(trackMap)
+
+			val crashLocation = findCrashedCartLocation()
+			if (crashLocation != null) {
+				return crashLocation
+			}
+		}
+
+		return null
+	}
+
+	private fun findCrashedCartLocation(): Vec2i? {
+		val cartLocationMap = HashMap<Vec2i, HashSet<Cart>>()
+		carts.forEach {
+			cartLocationMap.getOrPut(it.position) { hashSetOf() }.add(it)
+		}
+
+		return cartLocationMap.filter { it.value.size > 1 }
+				.map { it.key }
+				.firstOrNull()
+	}
 
 	companion object {
 		fun from(data: String): Simulation {
