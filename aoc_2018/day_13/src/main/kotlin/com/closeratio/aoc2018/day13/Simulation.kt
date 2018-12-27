@@ -4,7 +4,7 @@ import com.closeratio.aoc2018.common.math.Vec2i
 import com.closeratio.aoc2018.day13.Orientation.*
 
 class Simulation(
-		val carts: List<Cart>,
+		val carts: MutableList<Cart>,
 		val tracks: List<Track>
 ) {
 
@@ -13,29 +13,46 @@ class Simulation(
 			.map { it.x }
 			.max()!! + 1
 
-	fun iterate(iterationCount: Int?): Vec2i? {
-		(1..(iterationCount ?: Int.MAX_VALUE)).forEach {
-			val crashLocation = moveCarts()
+	fun iterateUntilCrash(): Vec2i {
+		while (true) {
+			val crashLocation = moveCarts(false)
 
 			if (crashLocation != null) {
 				return crashLocation
 			}
 		}
-
-		return null
 	}
 
-	private fun moveCarts(): Vec2i? {
+	fun iterateUntilSingleCartLeft(): Vec2i {
+		while (true) {
+			val finalLocation = moveCarts(true)
+
+			if (finalLocation != null) {
+				return finalLocation
+			}
+		}
+	}
+
+	private fun moveCarts(removeCrashedCarts: Boolean): Vec2i? {
 		// Get cart order
 		val orderedCarts = carts.sortedBy { it.position.y * gridWidth + it.position.x }
 
-		orderedCarts.forEach {
-			it.move(trackMap)
+		orderedCarts.forEach { cart ->
+			cart.move(trackMap)
 
 			val crashLocation = findCrashedCartLocation()
 			if (crashLocation != null) {
-				return crashLocation
+				if (removeCrashedCarts) {
+					carts.filter { it.position == crashLocation }
+							.forEach { carts.remove(it) }
+				} else {
+					return crashLocation
+				}
 			}
+		}
+
+		if (removeCrashedCarts && carts.size == 1) {
+			return carts.first().position
 		}
 
 		return null
@@ -61,7 +78,7 @@ class Simulation(
 					parseTracks(lines))
 		}
 
-		private fun parseCarts(lines: List<String>): List<Cart> {
+		private fun parseCarts(lines: List<String>): MutableList<Cart> {
 			var id = 0
 
 			return lines.mapIndexed { y, line ->
@@ -75,7 +92,7 @@ class Simulation(
 						else -> null
 					}
 				}
-			}.flatten()
+			}.flatten().toMutableList()
 		}
 
 		private fun parseTracks(lines: List<String>): List<Track> {

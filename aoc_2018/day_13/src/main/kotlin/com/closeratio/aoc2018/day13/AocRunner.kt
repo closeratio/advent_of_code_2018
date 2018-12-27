@@ -4,10 +4,13 @@ object AocRunner {
 
 	@JvmStatic
 	fun main(args: Array<String>) {
-		val sim = Simulation.from(javaClass.getResource("/input.txt").readText())
+		val sim1 = Simulation.from(javaClass.getResource("/input.txt").readText())
+		val result1 = sim1.iterateUntilCrash()
+		println(result1)
 
-		val result = sim.iterate(null)
-		println(result)
+		val sim2 = Simulation.from(javaClass.getResource("/input.txt").readText())
+		val result2 = sim2.iterateUntilSingleCartLeft()
+		println(result2)
 	}
 
 }
