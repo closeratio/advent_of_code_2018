@@ -28,4 +28,24 @@ class RecipeSimulationTest {
 		assertThat(sim.iterateUntilLength(2018), `is`("5941429882"))
 	}
 
+	@Test
+	fun testStringAppearance51589() {
+		assertThat(sim.iterateUntilStringAppears("51589"), `is`(9))
+	}
+
+	@Test
+	fun testStringAppearance01245() {
+		assertThat(sim.iterateUntilStringAppears("01245"), `is`(5))
+	}
+
+	@Test
+	fun testStringAppearance92510() {
+		assertThat(sim.iterateUntilStringAppears("92510"), `is`(18))
+	}
+
+	@Test
+	fun testStringAppearance59414() {
+		assertThat(sim.iterateUntilStringAppears("59414"), `is`(2018))
+	}
+
 }
