@@ -8,4 +8,7 @@ class Goblin(
 		position: Vec2i,
 		startingHealth: Int,
 		attackPower: Int)
-	: Entity(id, position, startingHealth, attackPower)
+	: Entity(id, position, startingHealth, attackPower) {
+
+
+}
