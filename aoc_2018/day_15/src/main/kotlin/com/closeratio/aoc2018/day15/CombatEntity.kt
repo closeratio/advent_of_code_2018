@@ -2,6 +2,7 @@ package com.closeratio.aoc2018.day15
 
 import com.closeratio.aoc2018.common.math.Vec2i
 import java.util.*
+import java.util.Comparator.comparingInt
 
 abstract class CombatEntity(
 		id: UUID,
@@ -45,18 +46,46 @@ abstract class CombatEntity(
 				.map { it.position }
 				.toSet()
 
-		val openSet = (1..mapDimensions.y)
-				.flatMap { y ->
-					(1..mapDimensions.x).map { x ->
-						Vec2i.from(x, y)
-					}
+		val openSet = PriorityQueue(comparingInt<Vec2i> { it.y * mapDimensions.x + it.x }
+				.then(comparingInt { position.manhattan(it) }))
+				.apply {
+					addAll(position
+							.adjacent()
+							.filter { it -> it !in entityPositions })
 				}
-				.filter { it !in entityPositions }
-				.sortedBy { position.manhattan(it) }
+		val closedSet = HashSet<Vec2i>()
 
+		val previousMap = HashMap<Vec2i, Vec2i>(openSet.associate { Pair(it, position) })
 
+		while (openSet.isNotEmpty()) {
+			val currentPosition = openSet.remove()
+			closedSet.add(currentPosition)
 
+			if (currentPosition.manhattan(target.position) == 1) {
+				val path = ArrayList<Vec2i>()
+				var current = currentPosition
 
+				while (current != position) {
+					path.add(0, current)
+					current = previousMap[current]!!
+				}
+
+				position = path[0]
+
+				return
+			}
+
+			openSet.addAll(currentPosition
+					.adjacent()
+					.filter { it !in entityPositions }
+					.filter { it !in closedSet }
+					.filter { it !in openSet }
+					.map {
+						previousMap[it] = currentPosition
+						it
+					})
+
+		}
 
 	}
 
@@ -66,9 +95,6 @@ abstract class CombatEntity(
 
 	override fun toString(): String {
 		return "${javaClass.simpleName}(position=$position, currentHealth=$currentHealth)"
-
-
 	}
-
 
 }
