@@ -4,13 +4,27 @@ import com.closeratio.aoc2018.common.math.Vec2i
 import java.util.*
 
 class CombatSimulation private constructor(
-		val entities: List<Entity>
+		entities: List<Entity>
 ) {
 
+	val entities = ArrayList(entities)
+
 	val positionMap = entities.associateBy { it.position }
+	val mapDimensions = Vec2i.from(
+			(entities.map { it.position.x }.max()!! - entities.map { it.position.x }.min()!!) + 1,
+			(entities.map { it.position.y }.max()!! - entities.map { it.position.y }.min() !!) + 1)
 
 	fun iterate() {
+		entities.filterIsInstance<CombatEntity>()
+				.sortedBy { it.orderValue(mapDimensions.x) }
+				.forEach { entity ->
+					entity.iterate(entities, mapDimensions)
 
+					// Remove dead entities
+					entities.removeAll(entities
+							.filterIsInstance<CombatEntity>()
+							.filter { it.currentHealth <= 0 })
+				}
 	}
 
 	companion object {

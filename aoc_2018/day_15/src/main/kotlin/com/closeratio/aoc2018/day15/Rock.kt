@@ -6,8 +6,4 @@ import java.util.*
 class Rock(
 		id: UUID,
 		position: Vec2i
-): Entity(id, position, 0, 0) {
-
-
-
-}
+): Entity(id, position)

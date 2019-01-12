@@ -5,11 +5,7 @@ import java.util.*
 
 abstract class Entity(
 		val id: UUID,
-		var position: Vec2i,
-		val startingHealth: Int,
-		val attackPower: Int) {
-
-	var currentHealth = startingHealth
+		var position: Vec2i) {
 
 	override fun equals(other: Any?): Boolean {
 		if (this === other) return true
@@ -24,10 +20,6 @@ abstract class Entity(
 
 	override fun hashCode(): Int {
 		return id.hashCode()
-	}
-
-	override fun toString(): String {
-		return "${javaClass.simpleName}(position=$position, currentHealth=$currentHealth)"
 	}
 
 }

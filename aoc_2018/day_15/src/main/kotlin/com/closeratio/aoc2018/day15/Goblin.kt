@@ -8,7 +8,8 @@ class Goblin(
 		position: Vec2i,
 		startingHealth: Int,
 		attackPower: Int)
-	: Entity(id, position, startingHealth, attackPower) {
+	: CombatEntity(id, position, startingHealth, attackPower) {
 
+	override fun enemyClass() = Elf::class.java
 
 }
