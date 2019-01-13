@@ -10,7 +10,7 @@ class CombatSimulation private constructor(
 	val entities = ArrayList(entities)
 
 	val initialPositionMap = entities.associateBy { it.position }
-	val mapDimensions = Vec2i.from(
+	private val mapDimensions = Vec2i.from(
 			(entities.map { it.position.x }.max()!! - entities.map { it.position.x }.min()!!) + 1,
 			(entities.map { it.position.y }.max()!! - entities.map { it.position.y }.min() !!) + 1)
 
@@ -27,18 +27,17 @@ class CombatSimulation private constructor(
 				}
 	}
 
-	fun serialisePositionMap(): String {
-		val positionMap = entities.associateBy { it.position }
+	fun computeOutcome(): Int {
+		var iterations = 0
+		while (entities.filterIsInstance<Elf>().isNotEmpty() && entities.filterIsInstance<Goblin>().isNotEmpty()) {
+			iterate()
+			iterations++
+		}
 
-		return (0..(mapDimensions.y - 1)).map { y ->
-			(0..(mapDimensions.x - 1)).map { x ->
-				val entity = positionMap[Vec2i.from(x, y)]
-				when (entity) {
-					null -> " "
-					else -> entity.serialised()
-				}
-			}.joinToString("")
-		}.joinToString("\n")
+		return iterations * entities
+				.filterIsInstance<CombatEntity>()
+				.map { it.currentHealth }
+				.sum()
 	}
 
 	companion object {
@@ -57,7 +56,8 @@ class CombatSimulation private constructor(
 								else -> throw IllegalArgumentException("Unknown char: \"$c\"")
 							}
 						}
-					}.flatten())
+					}
+					.flatten())
 		}
 	}
 }

@@ -8,7 +8,7 @@ abstract class CombatEntity(
 		id: UUID,
 		position: Vec2i,
 		startingHealth: Int,
-		val attackPower: Int)
+		private val attackPower: Int)
 	: Entity(id, position) {
 
 	var currentHealth = startingHealth
@@ -22,6 +22,8 @@ abstract class CombatEntity(
 
 		// Find enemies
 		val enemies = entities.filterIsInstance(enemyClass)
+
+		// If there are no enemies, end the turn
 		if (enemies.isEmpty()) {
 			return
 		}
@@ -35,17 +37,23 @@ abstract class CombatEntity(
 		val attackPositions = enemies
 				.flatMap { it.position.adjacent() }
 				.toSet()
-				.filter { it !in entityPositions }
+				.filter { (it !in entityPositions) || (it in entityPositions && it == position) }
+
+		// If there are no attack positions to try to move to, end the turn
+		if (attackPositions.isEmpty()) {
+			return
+		}
 
 		// If not already in an attack position
 		if (!inAttackPosition(attackPositions)) {
 
 			// Compute required path for movement into each attack position
+			// If no routes could be computed, it's not possible to move into any attack positions, so end turn
 			val attackPath = attackPositions
 					.mapNotNull { stepsToPosition(it, entityPositions, mapDimensions) }
 					.sortedBy { it[0].orderValue(mapDimensions) }
 					.sortedBy { it.size }
-					.first()
+					.firstOrNull() ?: return
 
 			position = attackPath[0]
 		}
@@ -55,7 +63,9 @@ abstract class CombatEntity(
 		}
 	}
 
-	private fun inAttackPosition(attackPositions: List<Vec2i>) = attackPositions.map { position == it }.any()
+	private fun inAttackPosition(attackPositions: List<Vec2i>) = attackPositions
+			.map { position == it }
+			.any { it }
 
 	private fun stepsToPosition(target: Vec2i, entityPositions: Set<Vec2i>, mapDimensions: Vec2i): List<Vec2i>? {
 		val openSet = PriorityQueue(comparingInt<Vec2i> { it.orderValue(mapDimensions) }
@@ -106,8 +116,7 @@ abstract class CombatEntity(
 		enemies
 				.sortedBy { it.orderValue(mapDimensions) }
 				.sortedBy { it.currentHealth }
-				.sortedBy { position.manhattan(it.position) == 1 }
-				.first().currentHealth -= attackPower
+				.first { position.manhattan(it.position) == 1 }.currentHealth -= attackPower
 	}
 
 	override fun toString(): String {
