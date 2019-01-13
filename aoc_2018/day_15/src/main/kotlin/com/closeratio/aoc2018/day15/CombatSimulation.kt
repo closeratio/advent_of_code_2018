@@ -9,14 +9,14 @@ class CombatSimulation private constructor(
 
 	val entities = ArrayList(entities)
 
-	val positionMap = entities.associateBy { it.position }
+	val initialPositionMap = entities.associateBy { it.position }
 	val mapDimensions = Vec2i.from(
 			(entities.map { it.position.x }.max()!! - entities.map { it.position.x }.min()!!) + 1,
 			(entities.map { it.position.y }.max()!! - entities.map { it.position.y }.min() !!) + 1)
 
 	fun iterate() {
 		entities.filterIsInstance<CombatEntity>()
-				.sortedBy { it.orderValue(mapDimensions.x) }
+				.sortedBy { it.orderValue(mapDimensions) }
 				.forEach { entity ->
 					entity.iterate(entities, mapDimensions)
 
@@ -25,6 +25,20 @@ class CombatSimulation private constructor(
 							.filterIsInstance<CombatEntity>()
 							.filter { it.currentHealth <= 0 })
 				}
+	}
+
+	fun serialisePositionMap(): String {
+		val positionMap = entities.associateBy { it.position }
+
+		return (0..(mapDimensions.y - 1)).map { y ->
+			(0..(mapDimensions.x - 1)).map { x ->
+				val entity = positionMap[Vec2i.from(x, y)]
+				when (entity) {
+					null -> " "
+					else -> entity.serialised()
+				}
+			}.joinToString("")
+		}.joinToString("\n")
 	}
 
 	companion object {

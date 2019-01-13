@@ -7,6 +7,8 @@ abstract class Entity(
 		val id: UUID,
 		var position: Vec2i) {
 
+	abstract fun serialised(): String
+
 	override fun equals(other: Any?): Boolean {
 		if (this === other) return true
 		if (javaClass != other?.javaClass) return false

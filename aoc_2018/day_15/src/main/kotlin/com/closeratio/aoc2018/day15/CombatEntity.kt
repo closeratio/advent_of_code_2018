@@ -15,38 +15,50 @@ abstract class CombatEntity(
 
 	abstract fun enemyClass(): Class<out CombatEntity>
 
-	fun orderValue(mapWidth: Int) = position.y * mapWidth + position.x
+	fun orderValue(mapDimensions: Vec2i) = position.y * mapDimensions.x + position.x
 
 	fun iterate(entities: List<Entity>, mapDimensions: Vec2i) {
 		val enemyClass = enemyClass()
 
+		// Find enemies
 		val enemies = entities.filterIsInstance(enemyClass)
 		if (enemies.isEmpty()) {
 			return
 		}
 
-		val enemiesInOrder = enemies
-				.sortedBy { it.orderValue(mapDimensions.x) }
-				.sortedBy { it.currentHealth }
-				.sortedBy { position.manhattan(it.position) }
-
-		val targetEnemy = enemiesInOrder.first()
-
-		if (position.manhattan(targetEnemy.position) > 1) {
-			moveToTarget(targetEnemy, entities, mapDimensions)
-		}
-
-		if (position.manhattan(targetEnemy.position) == 1) {
-			attackTarget(targetEnemy)
-		}
-	}
-
-	private fun moveToTarget(target: CombatEntity, entities: List<Entity>, mapDimensions: Vec2i) {
+		// Compute positions of all entities
 		val entityPositions = entities
 				.map { it.position }
 				.toSet()
 
-		val openSet = PriorityQueue(comparingInt<Vec2i> { it.y * mapDimensions.x + it.x }
+		// Compute positions to move into for attack
+		val attackPositions = enemies
+				.flatMap { it.position.adjacent() }
+				.toSet()
+				.filter { it !in entityPositions }
+
+		// If not already in an attack position
+		if (!inAttackPosition(attackPositions)) {
+
+			// Compute required path for movement into each attack position
+			val attackPath = attackPositions
+					.mapNotNull { stepsToPosition(it, entityPositions, mapDimensions) }
+					.sortedBy { it[0].orderValue(mapDimensions) }
+					.sortedBy { it.size }
+					.first()
+
+			position = attackPath[0]
+		}
+
+		if (inAttackPosition(attackPositions)) {
+			attackTarget(enemies, mapDimensions)
+		}
+	}
+
+	private fun inAttackPosition(attackPositions: List<Vec2i>) = attackPositions.map { position == it }.any()
+
+	private fun stepsToPosition(target: Vec2i, entityPositions: Set<Vec2i>, mapDimensions: Vec2i): List<Vec2i>? {
+		val openSet = PriorityQueue(comparingInt<Vec2i> { it.orderValue(mapDimensions) }
 				.then(comparingInt { position.manhattan(it) }))
 				.apply {
 					addAll(position
@@ -61,7 +73,7 @@ abstract class CombatEntity(
 			val currentPosition = openSet.remove()
 			closedSet.add(currentPosition)
 
-			if (currentPosition.manhattan(target.position) == 1) {
+			if (currentPosition == target) {
 				val path = ArrayList<Vec2i>()
 				var current = currentPosition
 
@@ -70,9 +82,7 @@ abstract class CombatEntity(
 					current = previousMap[current]!!
 				}
 
-				position = path[0]
-
-				return
+				return path
 			}
 
 			openSet.addAll(currentPosition
@@ -87,10 +97,17 @@ abstract class CombatEntity(
 
 		}
 
+		// No path found
+		return null
+
 	}
 
-	private fun attackTarget(target: CombatEntity) {
-		target.currentHealth -= attackPower
+	private fun attackTarget(enemies: List<CombatEntity>, mapDimensions: Vec2i) {
+		enemies
+				.sortedBy { it.orderValue(mapDimensions) }
+				.sortedBy { it.currentHealth }
+				.sortedBy { position.manhattan(it.position) == 1 }
+				.first().currentHealth -= attackPower
 	}
 
 	override fun toString(): String {
