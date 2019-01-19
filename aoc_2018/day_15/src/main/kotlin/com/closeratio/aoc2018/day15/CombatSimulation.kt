@@ -10,31 +10,41 @@ class CombatSimulation private constructor(
 	val entities = ArrayList(entities)
 
 	val initialPositionMap = entities.associateBy { it.position }
-	private val mapDimensions = Vec2i.from(
+	val mapDimensions = Vec2i.from(
 			(entities.map { it.position.x }.max()!! - entities.map { it.position.x }.min()!!) + 1,
 			(entities.map { it.position.y }.max()!! - entities.map { it.position.y }.min() !!) + 1)
 
-	fun iterate() {
+	// Return value indicates whether this was a "full round" of combat or not
+	fun iterate(): Boolean {
 		entities.filterIsInstance<CombatEntity>()
 				.sortedBy { it.orderValue(mapDimensions) }
 				.forEach { entity ->
-					entity.iterate(entities, mapDimensions)
+					if (entity.isAlive()) {
+						if (!entity.targetsAvailable(entities)) {
+							return false
+						}
+
+						entity.iterate(entities, mapDimensions)
+					}
 
 					// Remove dead entities
 					entities.removeAll(entities
 							.filterIsInstance<CombatEntity>()
 							.filter { it.currentHealth <= 0 })
 				}
+
+		return true
 	}
 
-	fun computeOutcome(): Int {
+	fun computeOutcome(iterOffset: Int = 0): Int {
 		var iterations = 0
 		while (entities.filterIsInstance<Elf>().isNotEmpty() && entities.filterIsInstance<Goblin>().isNotEmpty()) {
-			iterate()
-			iterations++
+			if (iterate()) {
+				iterations++
+			}
 		}
 
-		return iterations * entities
+		return (iterations + iterOffset) * entities
 				.filterIsInstance<CombatEntity>()
 				.map { it.currentHealth }
 				.sum()

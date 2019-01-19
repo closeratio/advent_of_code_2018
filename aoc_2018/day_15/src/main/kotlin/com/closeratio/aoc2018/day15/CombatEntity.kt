@@ -37,7 +37,7 @@ abstract class CombatEntity(
 		val attackPositions = enemies
 				.flatMap { it.position.adjacent() }
 				.toSet()
-				.filter { (it !in entityPositions) || (it in entityPositions && it == position) }
+				.filter { it !in entityPositions || it == position }
 
 		// If there are no attack positions to try to move to, end the turn
 		if (attackPositions.isEmpty()) {
@@ -63,13 +63,11 @@ abstract class CombatEntity(
 		}
 	}
 
-	private fun inAttackPosition(attackPositions: List<Vec2i>) = attackPositions
-			.map { position == it }
-			.any { it }
+	private fun inAttackPosition(attackPositions: List<Vec2i>) = attackPositions.any { position == it }
 
 	private fun stepsToPosition(target: Vec2i, entityPositions: Set<Vec2i>, mapDimensions: Vec2i): List<Vec2i>? {
-		val openSet = PriorityQueue(comparingInt<Vec2i> { it.orderValue(mapDimensions) }
-				.then(comparingInt { position.manhattan(it) }))
+		val openSet = PriorityQueue(comparingInt<Vec2i> { position.manhattan(it) }
+				.then(comparingInt { it.orderValue(mapDimensions) }))
 				.apply {
 					addAll(position
 							.adjacent()
@@ -117,6 +115,12 @@ abstract class CombatEntity(
 				.sortedBy { it.orderValue(mapDimensions) }
 				.sortedBy { it.currentHealth }
 				.first { position.manhattan(it.position) == 1 }.currentHealth -= attackPower
+	}
+
+	fun isAlive() = currentHealth > 0
+
+	fun targetsAvailable(entities: List<Entity>): Boolean {
+		return entities.any { it.javaClass == enemyClass() }
 	}
 
 	override fun toString(): String {

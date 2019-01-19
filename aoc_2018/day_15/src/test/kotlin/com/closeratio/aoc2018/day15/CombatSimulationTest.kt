@@ -119,56 +119,62 @@ class CombatSimulationTest {
 
 	@Test
 	fun computeOutcome1() {
-		val sim = from(ResourceLoader.loadResource("/test_input_2.txt").data)
-
-		val outcome = sim.computeOutcome()
-
-		assertThat(outcome, `is`(27730))
+		testExpectedOutcome("/test_input_2.txt", 27730)
 	}
 
 	@Test
 	fun computeOutcome2() {
-		val sim = from(ResourceLoader.loadResource("/test_input_3.txt").data)
-
-		val outcome = sim.computeOutcome()
-
-		assertThat(outcome, `is`(36334))
+		testExpectedOutcome("/test_input_3.txt", 36334)
 	}
 
 	@Test
 	fun computeOutcome3() {
-		val sim = from(ResourceLoader.loadResource("/test_input_4.txt").data)
-
-		val outcome = sim.computeOutcome()
-
-		assertThat(outcome, `is`(39514))
+		testExpectedOutcome("/test_input_4.txt", 39514)
 	}
 
 	@Test
 	fun computeOutcome4() {
-		val sim = from(ResourceLoader.loadResource("/test_input_5.txt").data)
-
-		val outcome = sim.computeOutcome()
-
-		assertThat(outcome, `is`(27755))
+		testExpectedOutcome("/test_input_5.txt", 27755)
 	}
 
 	@Test
 	fun computeOutcome5() {
-		val sim = from(ResourceLoader.loadResource("/test_input_6.txt").data)
-
-		val outcome = sim.computeOutcome()
-
-		assertThat(outcome, `is`(28944))
+		testExpectedOutcome("/test_input_6.txt", 28944)
 	}
 
 	@Test
 	fun computeOutcome6() {
-		val sim = from(ResourceLoader.loadResource("/test_input_7.txt").data)
+		testExpectedOutcome("/test_input_7.txt", 18740)
+	}
 
+	private fun testExpectedOutcome(inputFile: String, expectedOutcome: Int) {
+		val sim = from(ResourceLoader.loadResource(inputFile).data)
 		val outcome = sim.computeOutcome()
 
-		assertThat(outcome, `is`(18740))
+		try {
+			assertThat(outcome, `is`(expectedOutcome))
+		} catch (err: AssertionError) {
+			println("Assertion failed, expected outcome from $inputFile to be $expectedOutcome, but was $outcome")
+
+			val entMap = sim.entities.associateBy { it.position }
+
+			val sb = StringBuilder()
+			(0..(sim.mapDimensions.y - 1)).forEach { y ->
+				(0..(sim.mapDimensions.x - 1)).forEach { x ->
+					val ent = entMap[Vec2i.from(x, y)]
+					sb.append(when (ent) {
+						is Elf -> 'E'
+						is Goblin -> 'G'
+						is Rock -> '#'
+						else -> ' '
+					})
+				}
+				sb.appendln()
+			}
+			println(sb.toString())
+
+			throw err
+		}
 	}
 
 }
