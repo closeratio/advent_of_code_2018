@@ -18,10 +18,9 @@ abstract class CombatEntity(
 	fun orderValue(mapDimensions: Vec2i) = position.y * mapDimensions.x + position.x
 
 	fun iterate(entities: List<Entity>, mapDimensions: Vec2i) {
-		val enemyClass = enemyClass()
 
 		// Find enemies
-		val enemies = entities.filterIsInstance(enemyClass)
+		val enemies = entities.filterIsInstance(enemyClass())
 
 		// If there are no enemies, end the turn
 		if (enemies.isEmpty()) {
@@ -48,14 +47,15 @@ abstract class CombatEntity(
 		if (!inAttackPosition(attackPositions)) {
 
 			// Compute required path for movement into each attack position
+			val attackPaths = stepsToEnemies(entities, mapDimensions)
+
 			// If no routes could be computed, it's not possible to move into any attack positions, so end turn
-			val attackPath = attackPositions
-					.mapNotNull { stepsToPosition(it, entityPositions, mapDimensions) }
-					.sortedBy { it[0].orderValue(mapDimensions) }
+			val attackPath = attackPaths
+					.sortedBy { it.last().orderValue(mapDimensions) }
 					.sortedBy { it.size }
 					.firstOrNull() ?: return
 
-			position = attackPath[0]
+			position = attackPath[1]
 		}
 
 		if (inAttackPosition(attackPositions)) {
@@ -65,7 +65,9 @@ abstract class CombatEntity(
 
 	private fun inAttackPosition(attackPositions: List<Vec2i>) = attackPositions.any { position == it }
 
-	private fun stepsToPosition(target: Vec2i, entityPositions: Set<Vec2i>, mapDimensions: Vec2i): List<Vec2i>? {
+	private fun stepsToEnemies(entities: List<Entity>, mapDimensions: Vec2i): List<List<Vec2i>> {
+		val entityPositions = entities.map { it.position }.toSet()
+
 		val openSet = PriorityQueue(comparingInt<Vec2i> { position.manhattan(it) }
 				.then(comparingInt { it.orderValue(mapDimensions) }))
 				.apply {
@@ -76,38 +78,55 @@ abstract class CombatEntity(
 		val closedSet = HashSet<Vec2i>()
 
 		val previousMap = HashMap<Vec2i, Vec2i>(openSet.associate { Pair(it, position) })
+		val distanceMap = HashMap<Vec2i, Int>(openSet.associate { Pair(it, 1) })
 
 		while (openSet.isNotEmpty()) {
 			val currentPosition = openSet.remove()
+			val currentDistance = distanceMap[currentPosition]!!
 			closedSet.add(currentPosition)
-
-			if (currentPosition == target) {
-				val path = ArrayList<Vec2i>()
-				var current = currentPosition
-
-				while (current != position) {
-					path.add(0, current)
-					current = previousMap[current]!!
-				}
-
-				return path
-			}
 
 			openSet.addAll(currentPosition
 					.adjacent()
 					.filter { it !in entityPositions }
 					.filter { it !in closedSet }
-					.filter { it !in openSet }
 					.map {
-						previousMap[it] = currentPosition
+						val tentativeDistance = currentDistance + 1
+
+						if (it !in distanceMap || distanceMap[it]!! > tentativeDistance) {
+							distanceMap[it] = tentativeDistance
+							previousMap[it] = currentPosition
+						}
+
 						it
-					})
+					}
+					.filter { it !in openSet })
 
 		}
 
-		// No path found
-		return null
+		return entities
+				.filterIsInstance(enemyClass())
+				.filter { entity -> entity.position.adjacent().any { it !in entityPositions } }
+				.filter { entity -> entity.position.adjacent().any { it in previousMap } }
+				.map { entity ->
+					entity.position.adjacent()
+							.filter { it !in entityPositions }
+							.filter { it in previousMap }
+							.map { buildPath(it, previousMap) }
+							.sortedBy { it.last().orderValue(mapDimensions) }
+							.sortedBy { it.size }
+							.first()
+				}
+	}
 
+	private fun buildPath(end: Vec2i, previousMap: Map<Vec2i, Vec2i>): List<Vec2i> {
+		val path = arrayListOf<Vec2i>()
+		var curr: Vec2i? = end
+		while (curr != null) {
+			path.add(0, curr)
+			curr = previousMap[curr]
+		}
+
+		return path
 	}
 
 	private fun attackTarget(enemies: List<CombatEntity>, mapDimensions: Vec2i) {

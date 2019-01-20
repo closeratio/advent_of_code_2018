@@ -9,7 +9,6 @@ class CombatSimulation private constructor(
 
 	val entities = ArrayList(entities)
 
-	val initialPositionMap = entities.associateBy { it.position }
 	val mapDimensions = Vec2i.from(
 			(entities.map { it.position.x }.max()!! - entities.map { it.position.x }.min()!!) + 1,
 			(entities.map { it.position.y }.max()!! - entities.map { it.position.y }.min() !!) + 1)
@@ -36,7 +35,7 @@ class CombatSimulation private constructor(
 		return true
 	}
 
-	fun computeOutcome(iterOffset: Int = 0): Int {
+	fun computeOutcome(): Int {
 		var iterations = 0
 		while (entities.filterIsInstance<Elf>().isNotEmpty() && entities.filterIsInstance<Goblin>().isNotEmpty()) {
 			if (iterate()) {
@@ -44,10 +43,24 @@ class CombatSimulation private constructor(
 			}
 		}
 
-		return (iterations + iterOffset) * entities
+		return iterations * entities
 				.filterIsInstance<CombatEntity>()
 				.map { it.currentHealth }
 				.sum()
+	}
+
+	fun serialise(): String {
+		val entMap = entities.associateBy { it.position }
+
+		val sb = StringBuilder()
+		(0..(mapDimensions.y - 1)).forEach { y ->
+			(0..(mapDimensions.x - 1)).forEach { x ->
+				sb.append(entMap[Vec2i.from(x, y)]?.serialised() ?: ' ')
+			}
+			sb.appendln()
+		}
+
+		return sb.toString()
 	}
 
 	companion object {

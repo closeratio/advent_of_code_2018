@@ -20,14 +20,16 @@ class CombatSimulationTest {
 		assertThat(sim.entities.filterIsInstance<Goblin>().size, `is`(2))
 		assertThat(sim.entities.filterIsInstance<Rock>().size, `is`(29))
 
-		assertThat(sim.initialPositionMap[Vec2i.from(0, 0)]!! is Rock, `is`(true))
-		assertThat(sim.initialPositionMap[Vec2i.from(6, 6)]!! is Rock, `is`(true))
+		val initialPositionMap = sim.entities.associateBy { it.position }
 
-		assertThat(sim.initialPositionMap[Vec2i.from(1, 1)]!! is Goblin, `is`(true))
-		assertThat(sim.initialPositionMap[Vec2i.from(1, 3)]!! is Goblin, `is`(true))
+		assertThat(initialPositionMap[Vec2i.from(0, 0)]!! is Rock, `is`(true))
+		assertThat(initialPositionMap[Vec2i.from(6, 6)]!! is Rock, `is`(true))
 
-		assertThat(sim.initialPositionMap[Vec2i.from(1, 2)]!! is Elf, `is`(true))
-		assertThat(sim.initialPositionMap[Vec2i.from(4, 5)]!! is Elf, `is`(true))
+		assertThat(initialPositionMap[Vec2i.from(1, 1)]!! is Goblin, `is`(true))
+		assertThat(initialPositionMap[Vec2i.from(1, 3)]!! is Goblin, `is`(true))
+
+		assertThat(initialPositionMap[Vec2i.from(1, 2)]!! is Elf, `is`(true))
+		assertThat(initialPositionMap[Vec2i.from(4, 5)]!! is Elf, `is`(true))
 	}
 
 	@Test
@@ -105,6 +107,9 @@ class CombatSimulationTest {
 
 		assertThat(current.entities.size, `is`(expected.entities.size))
 
+		println(current.serialise())
+		println(expected.serialise())
+
 		expected.entities.forEach { expEntity: Entity ->
 			val currEnt = simEntityMap[expEntity.position]!!
 
@@ -154,25 +159,7 @@ class CombatSimulationTest {
 		try {
 			assertThat(outcome, `is`(expectedOutcome))
 		} catch (err: AssertionError) {
-			println("Assertion failed, expected outcome from $inputFile to be $expectedOutcome, but was $outcome")
-
-			val entMap = sim.entities.associateBy { it.position }
-
-			val sb = StringBuilder()
-			(0..(sim.mapDimensions.y - 1)).forEach { y ->
-				(0..(sim.mapDimensions.x - 1)).forEach { x ->
-					val ent = entMap[Vec2i.from(x, y)]
-					sb.append(when (ent) {
-						is Elf -> 'E'
-						is Goblin -> 'G'
-						is Rock -> '#'
-						else -> ' '
-					})
-				}
-				sb.appendln()
-			}
-			println(sb.toString())
-
+			println(sim.serialise())
 			throw err
 		}
 	}

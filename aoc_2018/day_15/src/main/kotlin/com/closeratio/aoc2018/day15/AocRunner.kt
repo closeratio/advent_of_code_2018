@@ -10,7 +10,9 @@ object AocRunner {
 
 		val outcome = sim.computeOutcome()
 
+		println(sim.serialise())
 		println(outcome)
+		println("Last outcome 220644 was too low")
 	}
 
 }
