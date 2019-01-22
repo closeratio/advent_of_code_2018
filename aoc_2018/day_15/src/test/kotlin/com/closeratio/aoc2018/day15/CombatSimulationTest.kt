@@ -156,6 +156,8 @@ class CombatSimulationTest {
 		val sim = from(ResourceLoader.loadResource(inputFile).data)
 		val outcome = sim.computeOutcome()
 
+		println(sim.serialise())
+
 		try {
 			assertThat(outcome, `is`(expectedOutcome))
 		} catch (err: AssertionError) {

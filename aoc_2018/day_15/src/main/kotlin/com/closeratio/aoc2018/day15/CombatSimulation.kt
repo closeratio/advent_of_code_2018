@@ -9,7 +9,7 @@ class CombatSimulation private constructor(
 
 	val entities = ArrayList(entities)
 
-	val mapDimensions = Vec2i.from(
+	private val mapDimensions = Vec2i.from(
 			(entities.map { it.position.x }.max()!! - entities.map { it.position.x }.min()!!) + 1,
 			(entities.map { it.position.y }.max()!! - entities.map { it.position.y }.min() !!) + 1)
 

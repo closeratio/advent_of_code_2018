@@ -88,17 +88,20 @@ abstract class CombatEntity(
 			openSet.addAll(currentPosition
 					.adjacent()
 					.filter { it !in entityPositions }
-					.filter { it !in closedSet }
 					.map {
 						val tentativeDistance = currentDistance + 1
 
 						if (it !in distanceMap || distanceMap[it]!! > tentativeDistance) {
 							distanceMap[it] = tentativeDistance
 							previousMap[it] = currentPosition
+						} else if (distanceMap[it]!! == tentativeDistance
+								&& currentPosition.orderValue(mapDimensions) < previousMap[it]!!.orderValue(mapDimensions)) {
+							previousMap[it] = currentPosition
 						}
 
 						it
 					}
+					.filter { it !in closedSet }
 					.filter { it !in openSet })
 
 		}
@@ -107,14 +110,11 @@ abstract class CombatEntity(
 				.filterIsInstance(enemyClass())
 				.filter { entity -> entity.position.adjacent().any { it !in entityPositions } }
 				.filter { entity -> entity.position.adjacent().any { it in previousMap } }
-				.map { entity ->
+				.flatMap { entity ->
 					entity.position.adjacent()
 							.filter { it !in entityPositions }
 							.filter { it in previousMap }
 							.map { buildPath(it, previousMap) }
-							.sortedBy { it.last().orderValue(mapDimensions) }
-							.sortedBy { it.size }
-							.first()
 				}
 	}
 
@@ -130,10 +130,10 @@ abstract class CombatEntity(
 	}
 
 	private fun attackTarget(enemies: List<CombatEntity>, mapDimensions: Vec2i) {
-		enemies
+		enemies.filter { position.manhattan(it.position) == 1 }
 				.sortedBy { it.orderValue(mapDimensions) }
 				.sortedBy { it.currentHealth }
-				.first { position.manhattan(it.position) == 1 }.currentHealth -= attackPower
+				.first().currentHealth -= attackPower
 	}
 
 	fun isAlive() = currentHealth > 0

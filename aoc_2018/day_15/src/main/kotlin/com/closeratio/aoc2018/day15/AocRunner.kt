@@ -12,7 +12,7 @@ object AocRunner {
 
 		println(sim.serialise())
 		println(outcome)
-		println("Last outcome 220644 was too low")
+		println("Last guesses [220644, 221130] were incorrect")
 	}
 
 }
