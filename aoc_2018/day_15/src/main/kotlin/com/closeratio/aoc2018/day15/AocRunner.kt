@@ -6,12 +6,14 @@ object AocRunner {
 
 	@JvmStatic
 	fun main (args: Array<String>) {
-		val sim = CombatSimulation.from(ResourceLoader.loadResource("/input.txt").data)
+		val data = ResourceLoader.loadResource("/input.txt").data
 
-		val outcome = sim.computeOutcome()
+		val sim = CombatSimulation.from(data)
+		val part1Outcome = sim.computeOutcome()
+		println(part1Outcome)
 
-		println(sim.serialise())
-		println(outcome)
+		val part2Outcome = CombatSimulationAttackManipulator.computeOutcome(data)
+		println(part2Outcome)
 	}
 
 }

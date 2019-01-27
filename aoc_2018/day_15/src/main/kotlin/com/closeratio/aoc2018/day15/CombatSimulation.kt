@@ -64,7 +64,7 @@ class CombatSimulation private constructor(
 	}
 
 	companion object {
-		fun from(data: String): CombatSimulation {
+		fun from(data: String, elfAttackPower: Int = 3): CombatSimulation {
 			return CombatSimulation(data.split("\n")
 					.map { it.trim() }
 					.mapIndexed { y, line ->
@@ -73,7 +73,7 @@ class CombatSimulation private constructor(
 							val pos = Vec2i.from(x, y)
 							when (c) {
 								'#' -> Rock(id, pos)
-								'E' -> Elf(id, pos, 200, 3)
+								'E' -> Elf(id, pos, 200, elfAttackPower)
 								'G' -> Goblin(id, pos, 200, 3)
 								'.' -> null
 								else -> throw IllegalArgumentException("Unknown char: \"$c\"")
