@@ -1,6 +1,6 @@
 package com.closeratio.aoc2018.day16.operations
 
-class BitwiseAndRegister: Operation(-1) {
+class BitwiseAndRegister: Operation(0) {
 	override fun calculateOutputValue(registers: Map<Int, Int>, parameterA: Int, parameterB: Int): Int {
 		return registers.getValue(parameterA).and(registers.getValue(parameterB))
 	}

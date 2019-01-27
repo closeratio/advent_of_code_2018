@@ -15,4 +15,10 @@ object InstructionParser {
 						result.groupValues[4].toInt()))
 	}
 
+	fun parse(lines: List<String>): List<Instruction> {
+		return lines
+				.map { it.trim() }
+				.map { parse(it) }
+	}
+
 }

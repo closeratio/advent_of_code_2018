@@ -1,26 +1,11 @@
 package com.closeratio.aoc2018.day16
 
-import com.closeratio.aoc2018.day16.operations.*
+import com.closeratio.aoc2018.day16.operations.Operation
+import com.closeratio.aoc2018.day16.operations.OperationType
 
 object MatchingOperationsChecker {
 
-	val operations = arrayOf(
-			AddImmediate(),
-			AddRegister(),
-			BitwiseAndImmediate(),
-			BitwiseAndRegister(),
-			BitwiseOrImmediate(),
-			BitwiseOrRegister(),
-			EqualImmediateRegister(),
-			EqualRegisterImmediate(),
-			EqualRegisterRegister(),
-			GreaterThanImmediateRegister(),
-			GreaterThanRefisterImmediate(),
-			GreaterThanRegisterRegister(),
-			MultiplyImmediate(),
-			MultiplyRegister(),
-			SetImmediate(),
-			SetRegister())
+	private val operations = OperationType.values().map { it.operation }.toTypedArray()
 
 	fun check(stateChange: StateChange): List<Operation> {
 		return operations
