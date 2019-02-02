@@ -12,8 +12,8 @@ class Cart(
 
 	fun move(trackMap: Map<Vec2i, Track>) {
 		position = when (orientation) {
-			UP -> position.down()
-			DOWN -> position.up()
+			UP -> position.up()
+			DOWN -> position.down()
 			LEFT -> position.left()
 			RIGHT -> position.right()
 			else -> throw IllegalStateException("Unhandled orientation: $orientation")
