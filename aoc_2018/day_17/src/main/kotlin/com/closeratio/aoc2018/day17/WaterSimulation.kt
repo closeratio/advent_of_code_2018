@@ -9,7 +9,7 @@ class WaterSimulation(
 		val blockMap: MutableMap<Vec2i, BlockType>
 ) {
 
-	private val posStack = Stack<Vec2i>()
+	private val fillStack = Stack<Pair<Vec2i, FillDirection>>()
 
 	private val minY = blockMap.keys
 			.map { it.y }
@@ -19,53 +19,71 @@ class WaterSimulation(
 			.max()!!
 
 	fun simulate() {
-		fill(Vec2i.from(500, 1), BOTH)
+		fillStack.push(Pair(Vec2i.from(500, 1), BOTH))
+		fill()
 	}
 
-	private fun fill(pos: Vec2i, direction: FillDirection) {
-		if (!isValidFillPosition(pos)) {
-			return
-		}
+	private fun fill() {
+		while (fillStack.isNotEmpty()) {
+			val (pos, direction) = fillStack.peek()
 
-		val down = pos.down()
-		if (!isPosInsideBounds(down)) {
-			blockMap[pos] = FLOWING_WATER
-			return
-		}
+			if (!isValidFillPosition(pos)) {
+				fillStack.pop()
+				continue
+			}
 
-		val downBlock = blockMap[down]
-		when (downBlock) {
-			null -> {
-				fill(down, BOTH)
+			val down = pos.down()
+			if (!isPosInsideBounds(down)) {
+				blockMap[pos] = FLOWING_WATER
+				fillStack.pop()
+				continue
+			}
 
-				val updatedDownBlock = blockMap[down]!!
-				if (updatedDownBlock == FLOWING_WATER) {
-					blockMap[pos] = FLOWING_WATER
-				} else if (updatedDownBlock == SETTLED_WATER) {
-					handleSettledFillResult(direction, pos)
+			val downBlock = blockMap[down]
+
+			val left = pos.left()
+			val leftBlock = blockMap[left]
+
+			val right = pos.right()
+			val rightBlock = blockMap[right]
+
+			when (downBlock) {
+				null -> fillStack.push(Pair(down, BOTH))
+				FLOWING_WATER -> blockMap[pos] = FLOWING_WATER
+				SETTLED_WATER, CLAY -> {
+					when (direction) {
+						BOTH -> {
+							if (leftBlock == null || rightBlock == null) {
+								fillStack.push(Pair(left, LEFT))
+								fillStack.push(Pair(right, RIGHT))
+							} else {
+								reconcileBothFill(pos)
+							}
+						}
+						LEFT -> {
+							if (leftBlock == CLAY || leftBlock == SETTLED_WATER) {
+								blockMap[pos] = SETTLED_WATER
+								fillStack.pop()
+							} else if (leftBlock == FLOWING_WATER) {
+								blockMap[pos] = FLOWING_WATER
+								fillStack.pop()
+							} else {
+								fillStack.push(Pair(left, LEFT))
+							}
+						}
+						RIGHT -> {
+							if (rightBlock == CLAY || rightBlock == SETTLED_WATER) {
+								blockMap[pos] = SETTLED_WATER
+								fillStack.pop()
+							} else if (rightBlock == FLOWING_WATER) {
+								blockMap[pos] = FLOWING_WATER
+								fillStack.pop()
+							} else {
+								fillStack.push(Pair(right, RIGHT))
+							}
+						}
+					}
 				}
-			}
-			FLOWING_WATER -> blockMap[pos] = FLOWING_WATER
-			SETTLED_WATER, CLAY -> {
-				handleSettledFillResult(direction, pos)
-			}
-		}
-	}
-
-	private fun handleSettledFillResult(direction: FillDirection, pos: Vec2i) {
-		when (direction) {
-			BOTH -> {
-				fill(pos.left(), LEFT)
-				fill(pos.right(), RIGHT)
-				reconcileBothFill(pos)
-			}
-			LEFT -> {
-				fill(pos.left(), LEFT)
-				blockMap[pos] = if (blockMap[pos.left()] == CLAY) SETTLED_WATER else blockMap[pos.left()]!!
-			}
-			RIGHT -> {
-				fill(pos.right(), RIGHT)
-				blockMap[pos] = if (blockMap[pos.right()] == CLAY) SETTLED_WATER else blockMap[pos.right()]!!
 			}
 		}
 	}
@@ -102,11 +120,20 @@ class WaterSimulation(
 	private fun isValidFillPosition(pos: Vec2i) = isPosInsideBounds(pos) && pos !in blockMap
 	private fun isPosInsideBounds(pos: Vec2i) = pos.y <= maxY
 
-	fun waterBlockCount() = blockMap
+	fun waterBlockCount() = settledWaterBlockCount() + flowingWaterBlockCount()
+
+	private fun flowingWaterBlockCount() = blockMap
 			.entries
+			.filter { it.value == FLOWING_WATER }
 			.filter { it.key.y >= minY }
 			.filter { it.key.y <= maxY }
-			.filter { it.value == FLOWING_WATER || it.value == SETTLED_WATER }
+			.size
+
+	fun settledWaterBlockCount() = blockMap
+			.entries
+			.filter { it.value == SETTLED_WATER }
+			.filter { it.key.y >= minY }
+			.filter { it.key.y <= maxY }
 			.size
 
 	fun serialise(): String {

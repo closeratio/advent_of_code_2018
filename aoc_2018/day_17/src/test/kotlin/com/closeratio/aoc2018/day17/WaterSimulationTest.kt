@@ -15,7 +15,9 @@ class WaterSimulationTest {
 	fun `Simulate with test input 1`() {
 		sim1.simulate()
 		println(sim1.serialise())
+
 		assertThat(sim1.waterBlockCount(), `is`(57))
+		assertThat(sim1.settledWaterBlockCount(), `is`(29))
 	}
 
 	@Test
@@ -23,6 +25,7 @@ class WaterSimulationTest {
 		sim2.simulate()
 		println(sim2.serialise())
 		assertThat(sim2.waterBlockCount(), `is`(72))
+		assertThat(sim2.settledWaterBlockCount(), `is`(56))
 	}
 
 	@Test
@@ -30,6 +33,7 @@ class WaterSimulationTest {
 		sim3.simulate()
 		println(sim3.serialise())
 		assertThat(sim3.waterBlockCount(), `is`(158))
+		assertThat(sim3.settledWaterBlockCount(), `is`(92))
 	}
 
 }

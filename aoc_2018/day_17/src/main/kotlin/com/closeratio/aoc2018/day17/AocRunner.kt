@@ -11,7 +11,8 @@ object AocRunner {
 		sim.simulate()
 		println(sim.serialise())
 
-		print(sim.waterBlockCount())
+		println(sim.waterBlockCount())
+		println(sim.settledWaterBlockCount())
 	}
 
 }
