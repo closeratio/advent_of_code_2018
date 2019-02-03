@@ -3,10 +3,13 @@ package com.closeratio.aoc2018.day17
 import com.closeratio.aoc2018.common.math.Vec2i
 import com.closeratio.aoc2018.day17.BlockType.*
 import com.closeratio.aoc2018.day17.FillDirection.*
+import java.util.*
 
 class WaterSimulation(
 		val blockMap: MutableMap<Vec2i, BlockType>
 ) {
+
+	private val posStack = Stack<Vec2i>()
 
 	private val minY = blockMap.keys
 			.map { it.y }
@@ -25,13 +28,18 @@ class WaterSimulation(
 		}
 
 		val down = pos.down()
+		if (!isPosInsideBounds(down)) {
+			blockMap[pos] = FLOWING_WATER
+			return
+		}
+
 		val downBlock = blockMap[down]
 		when (downBlock) {
 			null -> {
 				fill(down, BOTH)
 
-				val updatedDownBlock = blockMap[down]
-				if (updatedDownBlock == null || updatedDownBlock == FLOWING_WATER) {
+				val updatedDownBlock = blockMap[down]!!
+				if (updatedDownBlock == FLOWING_WATER) {
 					blockMap[pos] = FLOWING_WATER
 				} else if (updatedDownBlock == SETTLED_WATER) {
 					handleSettledFillResult(direction, pos)
@@ -75,32 +83,24 @@ class WaterSimulation(
 		} else if (leftBlock != rightBlock) {
 			blockMap[pos] = FLOWING_WATER
 
-			correctLeftFlow(pos.left())
-			correctRightFlow(pos.right())
+			var tempPos = pos.left()
+			while (tempPos in blockMap && blockMap[tempPos] == SETTLED_WATER) {
+				blockMap[tempPos] = FLOWING_WATER
+				tempPos = tempPos.left()
+			}
+
+			tempPos = pos.right()
+			while (tempPos in blockMap && blockMap[tempPos] == SETTLED_WATER) {
+				blockMap[tempPos] = FLOWING_WATER
+				tempPos = tempPos.right()
+			}
 		} else {
 			blockMap[pos] = leftBlock
 		}
 	}
 
-	private fun correctLeftFlow(pos: Vec2i) {
-		val block = blockMap[pos] ?: return
-
-		if (block == SETTLED_WATER) {
-			blockMap[pos] = FLOWING_WATER
-			correctLeftFlow(pos.left())
-		}
-	}
-
-	private fun correctRightFlow(pos: Vec2i) {
-		val block = blockMap[pos] ?: return
-
-		if (block == SETTLED_WATER) {
-			blockMap[pos] = FLOWING_WATER
-			correctLeftFlow(pos.right())
-		}
-	}
-
-	private fun isValidFillPosition(pos: Vec2i) = pos.y <= maxY && pos !in blockMap
+	private fun isValidFillPosition(pos: Vec2i) = isPosInsideBounds(pos) && pos !in blockMap
+	private fun isPosInsideBounds(pos: Vec2i) = pos.y <= maxY
 
 	fun waterBlockCount() = blockMap
 			.entries
