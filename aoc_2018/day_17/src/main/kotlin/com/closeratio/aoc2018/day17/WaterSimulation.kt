@@ -2,108 +2,105 @@ package com.closeratio.aoc2018.day17
 
 import com.closeratio.aoc2018.common.math.Vec2i
 import com.closeratio.aoc2018.day17.BlockType.*
+import com.closeratio.aoc2018.day17.FillDirection.*
 
 class WaterSimulation(
 		val blockMap: MutableMap<Vec2i, BlockType>
 ) {
 
-	private val minX = blockMap.keys
-			.map { it.x }
-			.min()!!
 	private val minY = blockMap.keys
 			.map { it.y }
 			.min()!!
-
-	private val maxX = blockMap.keys
-			.map { it.x }
-			.max()!!
 	private val maxY = blockMap.keys
 			.map { it.y }
 			.max()!!
 
 	fun simulate() {
-		iterateRecursive(Vec2i.from(500, 0))
+		fill(Vec2i.from(500, 1), BOTH)
 	}
 
-	private fun iterateRecursive(pos: Vec2i) {
-		if (pos.y > maxY) {
+	private fun fill(pos: Vec2i, direction: FillDirection) {
+		if (!isValidFillPosition(pos)) {
 			return
 		}
 
-		if (pos in blockMap) {
-			return
-		}
+		val down = pos.down()
+		val downBlock = blockMap[down]
+		when (downBlock) {
+			null -> {
+				fill(down, BOTH)
 
-		val next = pos.down()
-		if (next !in blockMap) {
-			iterateRecursive(next)
+				val updatedDownBlock = blockMap[down]
+				if (updatedDownBlock == null || updatedDownBlock == FLOWING_WATER) {
+					blockMap[pos] = FLOWING_WATER
+				} else if (updatedDownBlock == SETTLED_WATER) {
+					handleSettledFillResult(direction, pos)
+				}
+			}
+			FLOWING_WATER -> blockMap[pos] = FLOWING_WATER
+			SETTLED_WATER, CLAY -> {
+				handleSettledFillResult(direction, pos)
+			}
 		}
+	}
 
-		if (blockMap[next] == SETTLED_WATER || blockMap[next] == CLAY) {
-			fillRow(pos)
-		} else {
+	private fun handleSettledFillResult(direction: FillDirection, pos: Vec2i) {
+		when (direction) {
+			BOTH -> {
+				fill(pos.left(), LEFT)
+				fill(pos.right(), RIGHT)
+				reconcileBothFill(pos)
+			}
+			LEFT -> {
+				fill(pos.left(), LEFT)
+				blockMap[pos] = if (blockMap[pos.left()] == CLAY) SETTLED_WATER else blockMap[pos.left()]!!
+			}
+			RIGHT -> {
+				fill(pos.right(), RIGHT)
+				blockMap[pos] = if (blockMap[pos.right()] == CLAY) SETTLED_WATER else blockMap[pos.right()]!!
+			}
+		}
+	}
+
+	private fun reconcileBothFill(pos: Vec2i) {
+		val leftBlock = blockMap[pos.left()]!!
+		val rightBlock = blockMap[pos.right()]!!
+
+		if (leftBlock == CLAY && rightBlock == CLAY) {
+			blockMap[pos] = SETTLED_WATER
+		} else if (leftBlock == CLAY) {
+			blockMap[pos] = rightBlock
+		} else if (rightBlock == CLAY) {
+			blockMap[pos] = leftBlock
+		} else if (leftBlock != rightBlock) {
 			blockMap[pos] = FLOWING_WATER
+
+			correctLeftFlow(pos.left())
+			correctRightFlow(pos.right())
+		} else {
+			blockMap[pos] = leftBlock
 		}
 	}
 
-	private fun fillRow(pos: Vec2i) {
-		val (hasWalls, leftExtent, rightExtent) = checkForWalls(pos)
+	private fun correctLeftFlow(pos: Vec2i) {
+		val block = blockMap[pos] ?: return
 
-		(leftExtent.x..pos.x).forEach {
-			blockMap[Vec2i.from(it, pos.y)] = if (hasWalls) SETTLED_WATER else FLOWING_WATER
-		}
-
-		(pos.x..rightExtent.x).forEach {
-			blockMap[Vec2i.from(it, pos.y)] = if (hasWalls) SETTLED_WATER else FLOWING_WATER
-		}
-
-		val leftDown = leftExtent.down()
-		if (leftDown !in blockMap) {
-			iterateRecursive(leftDown)
-		}
-
-		val rightDown = rightExtent.down()
-		if (rightDown !in blockMap) {
-			iterateRecursive(rightDown)
-		}
-
-		if (!hasWalls && blockMap[leftDown] == SETTLED_WATER && blockMap[rightDown] == SETTLED_WATER) {
-			fillRow(pos)
+		if (block == SETTLED_WATER) {
+			blockMap[pos] = FLOWING_WATER
+			correctLeftFlow(pos.left())
 		}
 	}
 
+	private fun correctRightFlow(pos: Vec2i) {
+		val block = blockMap[pos] ?: return
 
-	private fun checkForWalls(pos: Vec2i): Triple<Boolean, Vec2i, Vec2i> {
-		var walls = true
-		var leftExtent: Vec2i? = null
-		var rightExtent: Vec2i? = null
-
-		var currPos = pos
-		while (leftExtent == null) {
-			when {
-				currPos.down() !in blockMap -> {
-					leftExtent = currPos
-					walls = false
-				}
-				currPos.left() in blockMap -> leftExtent = currPos
-				else -> currPos = currPos.left()
-			}
+		if (block == SETTLED_WATER) {
+			blockMap[pos] = FLOWING_WATER
+			correctLeftFlow(pos.right())
 		}
-
-		currPos = pos
-		while (rightExtent == null) {
-			when {
-				currPos.down() !in blockMap -> {
-					rightExtent = currPos
-					walls = false
-				}
-				currPos.right() in blockMap -> rightExtent = currPos
-				else -> currPos = currPos.right()
-			}
-		}
-
-		return Triple(walls, leftExtent, rightExtent)
 	}
+
+	private fun isValidFillPosition(pos: Vec2i) = pos.y <= maxY && pos !in blockMap
 
 	fun waterBlockCount() = blockMap
 			.entries
@@ -113,8 +110,16 @@ class WaterSimulation(
 			.size
 
 	fun serialise(): String {
+		val minX = blockMap.keys
+				.map { it.x }
+				.min()!!
+
+		val maxX = blockMap.keys
+				.map { it.x }
+				.max()!!
+
 		val sb = StringBuilder()
-		(minY..maxY).forEach { y ->
+		(1..maxY).forEach { y ->
 			(minX..maxX).forEach { x ->
 				val pos = Vec2i.from(x, y)
 				sb.append(when (blockMap[pos]) {

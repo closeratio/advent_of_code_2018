@@ -9,6 +9,7 @@ object WaterSimulationParser {
 	fun from(data: String): WaterSimulation {
 		val blockMap = data.split("\n")
 				.map { it.trim() }
+				.filter { it.isNotEmpty() }
 				.map { LINE_REGEX.find(it)!! }
 				.flatMap { parseBlocks(it) }
 				.associate { it }

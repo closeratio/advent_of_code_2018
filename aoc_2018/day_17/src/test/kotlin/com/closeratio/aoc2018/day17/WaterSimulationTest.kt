@@ -7,15 +7,19 @@ import org.junit.jupiter.api.Test
 
 class WaterSimulationTest {
 
-	val sim = WaterSimulationParser.from(ResourceLoader.loadResource("/test_input_1.txt").data)
+	val sim1 = WaterSimulationParser.from(ResourceLoader.loadResource("/test_input_1.txt").data)
+	val sim2 = WaterSimulationParser.from(ResourceLoader.loadResource("/test_input_2.txt").data)
 
 	@Test
-	fun simulate() {
-		sim.simulate()
+	fun `Simulate with test input 1`() {
+		sim1.simulate()
+		assertThat(sim1.waterBlockCount(), `is`(57))
+	}
 
-		println(sim.serialise())
-
-		assertThat(sim.waterBlockCount(), `is`(57))
+	@Test
+	fun `Simulate with test input 2`() {
+		sim2.simulate()
+		assertThat(sim2.waterBlockCount(), `is`(72))
 	}
 
 
