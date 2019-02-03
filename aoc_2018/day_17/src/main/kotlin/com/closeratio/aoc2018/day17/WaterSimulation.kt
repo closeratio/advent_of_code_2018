@@ -9,8 +9,6 @@ class WaterSimulation(
 		val blockMap: MutableMap<Vec2i, BlockType>
 ) {
 
-	private val fillStack = Stack<Pair<Vec2i, FillDirection>>()
-
 	private val minY = blockMap.keys
 			.map { it.y }
 			.min()!!
@@ -19,11 +17,13 @@ class WaterSimulation(
 			.max()!!
 
 	fun simulate() {
-		fillStack.push(Pair(Vec2i.from(500, 1), BOTH))
-		fill()
+		fill(Vec2i.from(500, 1))
 	}
 
-	private fun fill() {
+	private fun fill(initialPOsition: Vec2i) {
+		val fillStack = Stack<Pair<Vec2i, FillDirection>>()
+		fillStack.push(Pair(initialPOsition, BOTH))
+
 		while (fillStack.isNotEmpty()) {
 			val (pos, direction) = fillStack.peek()
 
@@ -60,31 +60,29 @@ class WaterSimulation(
 								reconcileBothFill(pos)
 							}
 						}
-						LEFT -> {
-							if (leftBlock == CLAY || leftBlock == SETTLED_WATER) {
-								blockMap[pos] = SETTLED_WATER
-								fillStack.pop()
-							} else if (leftBlock == FLOWING_WATER) {
-								blockMap[pos] = FLOWING_WATER
-								fillStack.pop()
-							} else {
-								fillStack.push(Pair(left, LEFT))
-							}
-						}
-						RIGHT -> {
-							if (rightBlock == CLAY || rightBlock == SETTLED_WATER) {
-								blockMap[pos] = SETTLED_WATER
-								fillStack.pop()
-							} else if (rightBlock == FLOWING_WATER) {
-								blockMap[pos] = FLOWING_WATER
-								fillStack.pop()
-							} else {
-								fillStack.push(Pair(right, RIGHT))
-							}
-						}
+						LEFT -> handleSettledBelow(fillStack, pos, leftBlock, left, LEFT)
+						RIGHT -> handleSettledBelow(fillStack, pos, rightBlock, right, RIGHT)
 					}
 				}
 			}
+		}
+	}
+
+	private fun handleSettledBelow(
+			fillStack: Stack<Pair<Vec2i, FillDirection>>,
+			pos: Vec2i,
+			dirBlock: BlockType?,
+			dirPos: Vec2i,
+			direction: FillDirection) {
+
+		if (dirBlock == CLAY || dirBlock == SETTLED_WATER) {
+			blockMap[pos] = SETTLED_WATER
+			fillStack.pop()
+		} else if (dirBlock == FLOWING_WATER) {
+			blockMap[pos] = FLOWING_WATER
+			fillStack.pop()
+		} else {
+			fillStack.push(Pair(dirPos, direction))
 		}
 	}
 
