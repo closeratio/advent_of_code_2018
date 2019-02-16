@@ -40,7 +40,25 @@ class LumberAreaStateTest {
 		val expected = parse(ResourceLoader.loadResource("/test_input_1_iteration_10.txt").data)
 
 		assertThat(next, `is`(expected))
-		assertThat(next.resourceValue(), `is`(1147))
+		assertThat(next.resourceValue, `is`(1147))
+	}
+
+	@Test
+	fun oneThousandIterations() {
+		val next = LumberAreaSimulation(parse(ResourceLoader.loadResource("/input.txt").data)).iterate(1000)
+		assertThat(next.resourceValue, `is`(190820))
+	}
+
+	@Test
+	fun oneThousandFiveHundredIterations() {
+		val next = LumberAreaSimulation(parse(ResourceLoader.loadResource("/input.txt").data)).iterate(1500)
+		assertThat(next.resourceValue, `is`(193965))
+	}
+
+	@Test
+	fun twoThousandIterations() {
+		val next = LumberAreaSimulation(parse(ResourceLoader.loadResource("/input.txt").data)).iterate(2000)
+		assertThat(next.resourceValue, `is`(199755))
 	}
 
 }

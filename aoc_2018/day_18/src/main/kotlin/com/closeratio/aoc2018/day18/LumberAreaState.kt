@@ -10,26 +10,27 @@ class LumberAreaState(
 	val openGroundCount = cells.values.filter { it == OPEN_GROUND }.size
 	val treeCount = cells.values.filter { it == TREES }.size
 	val lumberYardCount = cells.values.filter { it == LUMBERYARD }.size
+	val resourceValue = treeCount * lumberYardCount
 
 	fun next(): LumberAreaState {
 		return LumberAreaState(cells
-				.map {
-					val pos = it.key
-					val currType = it.value
-					val surrounding = getSurroundingCells(it.key)
+				.map { entry ->
+					val pos = entry.key
+					val currType = entry.value
+					val surrounding = getSurroundingCells(entry.key)
 
 					val newType = when (currType) {
 						OPEN_GROUND -> {
-							val treeCount = surrounding.filter { it.second == TREES }.size
+							val treeCount = surrounding.filter { it == TREES }.size
 							if (treeCount >= 3) TREES else OPEN_GROUND
 						}
 						TREES -> {
-							val lumberyardCount = surrounding.filter { it.second == LUMBERYARD }.size
+							val lumberyardCount = surrounding.filter { it == LUMBERYARD }.size
 							if (lumberyardCount >= 3) LUMBERYARD else TREES
 						}
 						LUMBERYARD -> {
-							val lumberyardCount = surrounding.filter { it.second == LUMBERYARD }.size
-							val treeCount = surrounding.filter { it.second == TREES }.size
+							val lumberyardCount = surrounding.filter { it == LUMBERYARD }.size
+							val treeCount = surrounding.filter { it == TREES }.size
 							if (lumberyardCount >= 1 && treeCount >= 1) LUMBERYARD else OPEN_GROUND
 						}
 					}
@@ -39,14 +40,11 @@ class LumberAreaState(
 				.toMap())
 	}
 
-	private fun getSurroundingCells(pos: Vec2i): Set<Pair<Vec2i, LumberAreaType>> {
+	private fun getSurroundingCells(pos: Vec2i): List<LumberAreaType> {
 		return pos.surrounding()
 				.filter { it in cells }
-				.map { Pair(it, cells.getValue(it)) }
-				.toSet()
+				.map { cells.getValue(it) }
 	}
-
-	fun resourceValue() = treeCount * lumberYardCount
 
 	override fun equals(other: Any?): Boolean {
 		if (this === other) return true
@@ -64,7 +62,7 @@ class LumberAreaState(
 	}
 
 	override fun toString(): String {
-		return "LumberAreaState(openGroundCount=$openGroundCount, treeCount=$treeCount, lumberYardCount=$lumberYardCount)"
+		return "LumberAreaState(resourceValue=$resourceValue)"
 	}
 
 }
