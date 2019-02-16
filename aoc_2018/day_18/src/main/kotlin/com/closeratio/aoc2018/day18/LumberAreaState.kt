@@ -46,6 +46,8 @@ class LumberAreaState(
 				.toSet()
 	}
 
+	fun resourceValue() = treeCount * lumberYardCount
+
 	override fun equals(other: Any?): Boolean {
 		if (this === other) return true
 		if (javaClass != other?.javaClass) return false
