@@ -4,7 +4,7 @@ class LumberAreaSimulation(
 		val initialState: LumberAreaState
 ) {
 
-	val stateMap = HashMap<LumberAreaState, LumberAreaState>()
+	val stateMap = LinkedHashMap<LumberAreaState, LumberAreaState>()
 
 	fun iterate(count: Int): LumberAreaState {
 		if (count <= 0) {
@@ -13,11 +13,14 @@ class LumberAreaSimulation(
 
 		var currState = initialState
 
-		(1..count).forEach {
+		(1..count).forEach { currInterationIndex ->
 			if (currState in stateMap) {
-				val sequenceSize = it
-				val remainingIters = count % sequenceSize
-				(1..(remainingIters + 1)).forEach {
+				val sequenceStart = stateMapKeyIndex(currState)
+				val sequenceEnd = currInterationIndex - 1
+
+				val sequenceSize = sequenceEnd - sequenceStart
+				val remainingIters = (count - sequenceStart) % sequenceSize
+				repeat(remainingIters) {
 					currState = stateMap[currState]!!
 				}
 
@@ -30,6 +33,20 @@ class LumberAreaSimulation(
 		}
 
 		return currState
+	}
+
+	private fun stateMapKeyIndex(state: LumberAreaState): Int {
+		if (state !in stateMap) {
+			throw IllegalArgumentException("State not in map: $state")
+		}
+
+		stateMap.entries.forEachIndexed { index, entry ->
+			if (entry.key == state) {
+				return index
+			}
+		}
+
+		throw IllegalStateException("Should not have reached this point")
 	}
 
 }
