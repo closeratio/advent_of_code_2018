@@ -1,4 +1,4 @@
-package com.closeratio.aoc2018.day19
+package com.closeratio.aoc2018.day20
 
 import com.closeratio.aoc2018.common.math.Vec2i
 

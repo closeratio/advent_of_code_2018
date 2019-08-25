@@ -1,4 +1,4 @@
-package com.closeratio.aoc2018.day19
+package com.closeratio.aoc2018.day20
 
 object AocRunner {
 
@@ -22,5 +22,6 @@ object AocRunner {
 }
 
 fun main() {
+    AocRunner.runPart1()
     AocRunner.runPart2()
 }

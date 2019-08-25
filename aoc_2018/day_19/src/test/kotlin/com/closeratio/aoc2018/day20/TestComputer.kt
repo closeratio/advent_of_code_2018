@@ -1,5 +1,6 @@
-package com.closeratio.aoc2018.day19
+package com.closeratio.aoc2018.day20
 
+import com.closeratio.aoc2018.day19.Computer
 import com.closeratio.aoc2018.day19.instructions.AddImmediate
 import com.closeratio.aoc2018.day19.instructions.AddRegister
 import com.closeratio.aoc2018.day19.instructions.SetImmediate

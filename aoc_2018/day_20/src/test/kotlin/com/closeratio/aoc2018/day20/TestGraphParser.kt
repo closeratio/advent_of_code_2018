@@ -1,6 +1,6 @@
-package com.closeratio.aoc2018.day19
+package com.closeratio.aoc2018.day20
 
-import com.closeratio.aoc2018.day19.GraphParser.parseGraph
+import com.closeratio.aoc2018.day20.GraphParser.parseGraph
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
 import org.junit.jupiter.api.Test

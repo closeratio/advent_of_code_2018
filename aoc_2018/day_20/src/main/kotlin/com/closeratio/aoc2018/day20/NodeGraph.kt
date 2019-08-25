@@ -1,4 +1,4 @@
-package com.closeratio.aoc2018.day19
+package com.closeratio.aoc2018.day20
 
 import com.closeratio.aoc2018.common.math.Vec2d
 import com.closeratio.aoc2018.common.math.Vec2i
@@ -12,40 +12,43 @@ class NodeGraph {
     fun calculateDistanceMap(): Map<Node, Int> {
         val start = nodes.getValue(Vec2i.ZERO)
         val distanceMap = hashMapOf(
-                start to 0,
-                *start.connectedNodes
-                        .map {
-                            it to 1
-                        }
-                        .toTypedArray()
+                start to 0
         )
 
-        val unprocessedNodes = hashSetOf(*start.connectedNodes.toTypedArray())
-        val processedNodes = hashSetOf(start)
+        val unprocessedNodes = hashSetOf(start)
+        val processedNodes = hashMapOf<Node, Int>()
 
         while (unprocessedNodes.isNotEmpty()) {
+            // Get next nearest room
             val curr = distanceMap
                     .entries
                     .filter { it.key in unprocessedNodes }
                     .minBy { it.value }!!
                     .key
+
+            // Get distance of current room
+            val currDist = distanceMap.getValue(curr)
+
+            // Remove current room from unprocessed list, save its distance to the processed nodes map, and remove
+            // it from the distance map so that it's doesn't get considered in the next iteration.
             unprocessedNodes.remove(curr)
-            processedNodes.add(curr)
+            processedNodes[curr] = currDist
+            distanceMap.remove(curr)
 
             curr.connectedNodes
                     .filter { it !in processedNodes }
                     .forEach {
-                        val newDist = distanceMap.getValue(curr) + 1
+                        val nextDist = currDist + 1
                         if (it !in distanceMap) {
-                            distanceMap[it] = newDist
+                            distanceMap[it] = nextDist
                             unprocessedNodes.add(it)
-                        } else if (newDist < distanceMap.getValue(it)) {
-                            distanceMap[it] = newDist
+                        } else if (nextDist < distanceMap.getValue(it)) {
+                            distanceMap[it] = nextDist
                         }
                     }
         }
 
-        return distanceMap
+        return processedNodes
     }
 
     fun calculateFurthestNode(): SearchResult {
