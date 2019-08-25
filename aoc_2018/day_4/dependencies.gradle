@@ -1,5 +1,3 @@
-project(':aoc_2018:day_4') {
-	dependencies {
+dependencies {
 
-	}
 }

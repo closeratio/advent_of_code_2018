@@ -16,10 +16,9 @@ class Cart(
 			DOWN -> position.down()
 			LEFT -> position.left()
 			RIGHT -> position.right()
-			else -> throw IllegalStateException("Unhandled orientation: $orientation")
 		}
 
-		val newPos = trackMap[position]!!
+		val newPos = trackMap.getValue(position)
 
 		when (newPos.trackType) {
 			TrackType.CROSSROADS -> {
@@ -32,7 +31,6 @@ class Cart(
 					LEFT -> UP
 					DOWN -> RIGHT
 					RIGHT -> DOWN
-					else -> throw IllegalStateException("Unhandled state: $orientation")
 				}
 			}
 			TrackType.FORWARD_SLASH -> {
@@ -41,9 +39,9 @@ class Cart(
 					RIGHT -> UP
 					DOWN -> LEFT
 					LEFT -> DOWN
-					else -> throw IllegalStateException("Unhandled state: $orientation")
 				}
 			}
+			else -> {}
 		}
 	}
 
@@ -66,7 +64,6 @@ class Cart(
 					LEFT -> UP
 				}
 			}
-			else -> throw IllegalStateException("Unhandled turn direction: $nextTurnDirection")
 		}
 	}
 
@@ -75,7 +72,6 @@ class Cart(
 			TurnDirection.LEFT -> TurnDirection.STRAIGHT
 			TurnDirection.STRAIGHT -> TurnDirection.RIGHT
 			TurnDirection.RIGHT -> TurnDirection.LEFT
-			else -> throw IllegalStateException("Unhandled turn direction: $nextTurnDirection")
 		}
 	}
 
