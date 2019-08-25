@@ -2,6 +2,6 @@ rootProject.name = 'advent_of_code_2018'
 
 include ':aoc_2018:common'
 
-(1..19).each {
+(1..20).each {
 	include ":aoc_2018:day_$it"
 }
