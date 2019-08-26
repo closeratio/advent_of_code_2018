@@ -14,4 +14,9 @@ class TestRegionMap {
         assertThat(regionMap.totalRiskLevel(), `is`(114))
     }
 
+    @Test
+    fun timeToTarget() {
+        assertThat(regionMap.timeToTarget(), `is`(45))
+    }
+
 }

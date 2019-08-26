@@ -13,8 +13,12 @@ object AocRunner {
         println(regionMap.totalRiskLevel())
     }
 
+    fun runPart2() {
+        println(regionMap.timeToTarget())
+    }
+
 }
 
 fun main() {
-    AocRunner.runPart1()
+    AocRunner.runPart2()
 }
