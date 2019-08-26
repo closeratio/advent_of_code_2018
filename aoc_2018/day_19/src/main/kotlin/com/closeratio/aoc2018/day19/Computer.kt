@@ -2,15 +2,20 @@ package com.closeratio.aoc2018.day19
 
 import com.closeratio.aoc2018.day19.instructions.*
 
-class Computer private constructor(
+open class Computer protected constructor(
         val instructions: List<Instruction>,
-        var instructionPointer: Int,
         var ipRegister: Int
 ) {
 
+    var instructionPointer: Int = 0
     val registers = arrayOf(0, 0, 0, 0, 0, 0)
 
     var executionCount = 0
+    private val preExecCallbacks = hashMapOf<Int, ArrayList<() -> Boolean>>()
+
+    fun addPreExecCallback(lineNumber: Int, callback: () -> Boolean) {
+        preExecCallbacks.getOrPut(lineNumber, { ArrayList() }).add(callback)
+    }
 
     fun executeInstruction() {
         // Write IP value to bound register
@@ -26,14 +31,17 @@ class Computer private constructor(
         instructionPointer++
     }
 
-    fun executeUntilFinished() {
+    open fun executeUntilFinished() {
         while (instructionPointer >= 0 && instructionPointer < instructions.size) {
+            if (instructionPointer in preExecCallbacks &&
+                    preExecCallbacks.getValue(instructionPointer)
+                            .map { it() }
+                            .any { it }) {
+                return
+            }
+
             executeInstruction()
             executionCount++
-
-            if (executionCount % 10000 == 0) {
-                println(registers.map { it.toString() })
-            }
         }
     }
 
@@ -43,7 +51,6 @@ class Computer private constructor(
             val instructionLines = inputLines.drop(1)
             return Computer(
                     instructionLines.map { parseInstruction(it) },
-                    0,
                     ipLine.split(" ")[1].toInt()
             )
         }
