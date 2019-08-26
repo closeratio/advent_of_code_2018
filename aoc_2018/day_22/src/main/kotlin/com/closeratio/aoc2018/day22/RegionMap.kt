@@ -68,7 +68,7 @@ class RegionMap(
             // Get next nearest room
             val curr = distanceMap
                     .entries
-                    .minBy { it.value + it.key.region.position.manhattan(targetState.region.position) }!!
+                    .minBy { it.value }!!
                     .key
 
             // Get distance of current room
