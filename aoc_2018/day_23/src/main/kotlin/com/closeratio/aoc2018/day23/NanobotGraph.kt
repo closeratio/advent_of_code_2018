@@ -6,22 +6,25 @@ class NanobotGraph private constructor(
         val nanobots: Set<Nanobot>
 ) {
 
+    init {
+        nanobots.forEach { it.updateSharedPointNeighbours(nanobots) }
+    }
+
     fun getNanobotWithLargestRadius(): Nanobot = nanobots.maxBy { it.signalRadius }!!
 
     fun getNanobotsInRangeOfNanobot(nanobot: Nanobot): Set<Nanobot> = nanobots
             .filter { it.position.manhattan(nanobot.position) <= nanobot.signalRadius }
             .toSet()
 
-    private fun getNanobotsThatCanReachNanobot(nanobot: Nanobot): Set<Nanobot> = nanobots
-            .filter { it.isPosInRange(nanobot.position) }
-            .toSet()
-
     fun getDistanceToOptimumPosition(): Int {
-        return 0
+        return BronKerbosch
+                .largestClique(nanobots)
+                .map { it.position.manhattan(Vec3i.ZERO) - it.signalRadius }
+                .max()!!
     }
 
     companion object {
-        val lineRegex = Regex("<(-?\\d+),(-?\\d+),(-?\\d+)>, r=(\\d+)")
+        private val lineRegex = Regex("<(-?\\d+),(-?\\d+),(-?\\d+)>, r=(\\d+)")
 
         fun from(data: List<String>): NanobotGraph {
             return NanobotGraph(data

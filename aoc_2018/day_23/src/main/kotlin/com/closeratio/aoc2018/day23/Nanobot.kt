@@ -7,7 +7,16 @@ data class Nanobot(
         val signalRadius: Int
 ) {
 
-    fun isPosInRange(pos: Vec3i): Boolean = isPosInRange(pos.x, pos.y, pos.z)
-    fun isPosInRange(x: Int, y: Int, z: Int): Boolean = position.manhattan(x, y, z) <= signalRadius
+    val neighbours = hashSetOf<Nanobot>()
+
+    private fun isInRangeOfSharedPoint(nanobot: Nanobot): Boolean = position.manhattan(nanobot.position) <= signalRadius + nanobot.signalRadius
+
+    fun updateSharedPointNeighbours(nanobots: Set<Nanobot>) {
+        neighbours.clear()
+        neighbours.addAll(nanobots
+                .filter { it != this }
+                .filter { isInRangeOfSharedPoint(it) })
+    }
+
 
 }
