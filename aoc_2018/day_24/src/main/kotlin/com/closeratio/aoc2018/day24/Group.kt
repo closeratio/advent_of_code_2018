@@ -5,8 +5,9 @@ class Group(
         val allegiance: Allegiance,
         val initialUnitCount: Int,
         val initialHitPointsPerUnit: Int,
+        val immunities: Set<DamageType>,
         val weaknesses: Set<DamageType>,
-        val attackPower: Int,
+        val attackDamage: Int,
         val attackDamageType: DamageType,
         val initiative: Int
 ) {
