@@ -73,4 +73,15 @@ class Group(
         return "Group(groupIndex=$groupIndex, allegiance=$allegiance)"
     }
 
+    fun plusBoost(boost: Int): Group = Group(
+            groupIndex,
+            allegiance,
+            initialUnitCount,
+            hitPointsPerUnit,
+            immunities, weaknesses,
+            attackDamage + boost,
+            attackDamageType,
+            initiative
+    )
+
 }

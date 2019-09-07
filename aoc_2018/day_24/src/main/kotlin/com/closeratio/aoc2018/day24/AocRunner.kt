@@ -1,19 +1,33 @@
 package com.closeratio.aoc2018.day24
 
-object AocRunner {
-	val battlefield = BattlefieldFactory.from(javaClass
-			.getResource("/input.txt")
-			.readText()
-			.trim()
-			.split("\n")
-			.map { it.trim() })
+import com.closeratio.aoc2018.day24.Allegiance.INFECTION
 
-	fun runPart1() {
-		val unitCount = battlefield.fightUntilFinished()
-		println(unitCount)
-	}
+object AocRunner {
+    val battlefield = BattlefieldFactory.from(javaClass
+            .getResource("/input.txt")
+            .readText()
+            .trim()
+            .split("\n")
+            .map { it.trim() })
+
+    fun runPart1() {
+        val result = battlefield.fightUntilFinished()
+        println(result)
+    }
+
+    fun runPart2() {
+        var boost = 0
+        var currBattlefield = battlefield.plusBoost(boost)
+        while ((currBattlefield.fightUntilFinished()?.winningAllegiance ?: INFECTION) == INFECTION) {
+            ++boost
+            currBattlefield = battlefield.plusBoost(boost)
+        }
+
+        val result = battlefield.plusBoost(boost).fightUntilFinished()
+		println(result)
+    }
 }
 
 fun main() {
-	AocRunner.runPart1()
+    AocRunner.runPart2()
 }

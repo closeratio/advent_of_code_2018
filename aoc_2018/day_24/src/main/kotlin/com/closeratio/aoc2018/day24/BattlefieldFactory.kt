@@ -22,13 +22,17 @@ object BattlefieldFactory {
                             groupIndex = 1
                         }
                         else -> {
-                            groups.add(parseGroup(line, groupIndex, currAllegiance))
+                            groups.add(parseGroup(
+                                    line,
+                                    groupIndex,
+                                    currAllegiance
+                            ))
                             groupIndex++
                         }
                     }
                 }
 
-        return Battlefield(groups)
+        return Battlefield(0, groups)
     }
 
     private val lineRegex = """(\d+) units each with (\d+) hit points (\([a-z;, ]+\) )?with an attack that does (\d+) (\w+) damage at initiative (\d+)""".toRegex()

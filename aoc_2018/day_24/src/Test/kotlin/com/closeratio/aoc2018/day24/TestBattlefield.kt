@@ -40,7 +40,7 @@ class TestBattlefield {
 
     @Test
     fun fightUntilFinished() {
-        val unitCount = battlefield.fightUntilFinished()
+        val unitCount = battlefield.fightUntilFinished()!!.unitCount
 
         assertThat(unitCount, `is`(5216))
     }
