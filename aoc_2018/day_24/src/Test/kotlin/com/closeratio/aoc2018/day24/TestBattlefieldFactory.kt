@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 
 class TestBattlefieldFactory {
 
-    val battlefield = BattlefieldFactory.from(javaClass
+    private val battlefield = BattlefieldFactory.from(javaClass
             .getResource("/test_input.txt")
             .readText()
             .split("\n")
@@ -22,7 +22,7 @@ class TestBattlefieldFactory {
         assertThat(groups.filter { it.allegiance == IMMUNE_SYSTEM }.size, `is`(2))
 
         assertThat(groups[0].initialUnitCount, `is`(17))
-        assertThat(groups[0].initialHitPointsPerUnit, `is`(5390))
+        assertThat(groups[0].hitPointsPerUnit, `is`(5390))
         assertThat(groups[0].immunities.size, `is`(0))
         assertThat(groups[0].weaknesses, hasItems(DamageType("RADIATION"), DamageType("BLUDGEONING")))
         assertThat(groups[0].attackDamage, `is`(4507))

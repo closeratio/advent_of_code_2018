@@ -8,18 +8,18 @@ object BattlefieldFactory {
     fun from(lines: List<String>): Battlefield {
         lateinit var currAllegiance: Allegiance
         val groups = arrayListOf<Group>()
-        var groupIndex = 0
+        var groupIndex = 1
 
         lines.filter { it.isNotBlank() }
                 .forEach { line ->
                     when (line.toLowerCase()) {
                         "immune system:" -> {
                             currAllegiance = IMMUNE_SYSTEM
-                            groupIndex = 0
+                            groupIndex = 1
                         }
                         "infection:" -> {
                             currAllegiance = INFECTION
-                            groupIndex = 0
+                            groupIndex = 1
                         }
                         else -> {
                             groups.add(parseGroup(line, groupIndex, currAllegiance))
