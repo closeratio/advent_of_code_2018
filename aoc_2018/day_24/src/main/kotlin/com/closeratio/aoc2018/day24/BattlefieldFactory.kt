@@ -31,7 +31,7 @@ object BattlefieldFactory {
         return Battlefield(groups)
     }
 
-    private val lineRegex = """(\d+) units each with (\d+) hit points \(([a-z;, ]+)\) with an attack that does (\d+) (\w+) damage at initiative (\d+)""".toRegex()
+    private val lineRegex = """(\d+) units each with (\d+) hit points (\([a-z;, ]+\) )?with an attack that does (\d+) (\w+) damage at initiative (\d+)""".toRegex()
 
     private fun parseGroup(
             line: String,
@@ -47,8 +47,8 @@ object BattlefieldFactory {
                 allegiance,
                 groups[0].toInt(),
                 groups[1].toInt(),
-                parseImmunities(groups[2]),
-                parseWeaknesses(groups[2]),
+                parseImmunities(groups[2].trim(' ', '(', ')')),
+                parseWeaknesses(groups[2].trim(' ', '(', ')')),
                 groups[3].toInt(),
                 DamageType(groups[4].toUpperCase()),
                 groups[5].toInt()

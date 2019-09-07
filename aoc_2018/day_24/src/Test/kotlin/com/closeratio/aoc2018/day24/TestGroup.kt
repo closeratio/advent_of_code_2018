@@ -33,15 +33,21 @@ class TestGroup {
     fun applyDamage() {
         immGroup2.applyDamage(107640)
         assertThat(immGroup2.initialUnitCount - immGroup2.unitCount, `is`(84))
-
-        infGroup1.applyDamage(24725)
-//        assertThat(infGroup1.initialUnitCount - infGroup1.unitCount, `is`(4))
-
-        infGroup2.applyDamage(153238)
-        assertThat(infGroup2.initialUnitCount - infGroup2.unitCount, `is`(51))
-
-        immGroup1.applyDamage(185832)
-        assertThat(immGroup1.initialUnitCount - immGroup1.unitCount, `is`(17))
     }
+
+	@Test
+	fun attack() {
+		infGroup2.attack(immGroup2)
+		assertThat(immGroup2.initialUnitCount - immGroup2.unitCount, `is`(84))
+
+		immGroup2.attack(infGroup1)
+		assertThat(infGroup1.initialUnitCount - infGroup1.unitCount, `is`(4))
+
+		immGroup1.attack(infGroup2)
+		assertThat(infGroup2.initialUnitCount - infGroup2.unitCount, `is`(51))
+
+		infGroup1.attack(immGroup1)
+		assertThat(immGroup1.initialUnitCount - immGroup1.unitCount, `is`(17))
+	}
 
 }

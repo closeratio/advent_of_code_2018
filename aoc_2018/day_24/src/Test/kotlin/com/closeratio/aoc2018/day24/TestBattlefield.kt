@@ -28,4 +28,20 @@ class TestBattlefield {
         assertThat(selections, hasItem(infGroup1 to immGroup1))
     }
 
+    @Test
+    fun fight() {
+        battlefield.fight()
+
+        assertThat(immGroup2.initialUnitCount - immGroup2.unitCount, `is`(84))
+        assertThat(infGroup1.initialUnitCount - infGroup1.unitCount, `is`(4))
+        assertThat(infGroup2.initialUnitCount - infGroup2.unitCount, `is`(51))
+        assertThat(immGroup1.initialUnitCount - immGroup1.unitCount, `is`(17))
+    }
+
+    @Test
+    fun fightUntilFinished() {
+        val unitCount = battlefield.fightUntilFinished()
+
+        assertThat(unitCount, `is`(5216))
+    }
 }

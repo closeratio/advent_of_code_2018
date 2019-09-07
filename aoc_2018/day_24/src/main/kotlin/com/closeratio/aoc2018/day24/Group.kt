@@ -47,6 +47,10 @@ class Group(
         unitCount = (unitCount - (amount / hitPointsPerUnit)).coerceAtLeast(0)
     }
 
+    fun attack(target: Group) {
+        target.applyDamage(computeDamageAmount(target))
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
