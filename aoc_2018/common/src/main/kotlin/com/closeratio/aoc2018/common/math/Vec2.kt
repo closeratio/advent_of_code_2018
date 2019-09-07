@@ -1,6 +1,5 @@
 package com.closeratio.aoc2018.common.math
 
-import java.lang.Math.abs
 import java.lang.Math.sqrt
 
 abstract class Vec2<T: Number>(
@@ -10,8 +9,6 @@ abstract class Vec2<T: Number>(
 
 	fun length() = sqrt(length2())
 	fun length2() = x.toDouble() * x.toDouble() + y.toDouble() * y.toDouble()
-
-	fun manhattan() = abs(x.toDouble()) + abs(y.toDouble())
 
 	override fun equals(other: Any?): Boolean {
 		if (this === other) return true
